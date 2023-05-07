@@ -47,7 +47,6 @@ vim.opt.rtp:prepend(lazypath)
 
 local plugins = {
     spec = {
-        -- Core Plugins
         {
             priority = 998,
             "williamboman/mason.nvim",
@@ -69,8 +68,13 @@ local plugins = {
             config = function()
                 local opts = { silent = true, noremap = true }
                 vim.keymap.set("n", "<leader>f", "<cmd>CtrlP<cr>", opts)
-                vim.keymap.set("n", "<leader>re", "<cmd>CtrlPMRUFiles<cr>", opts)
-                vim.keymap.set("n", "<leader>g", "<cmd>CtrlPBuffer<cr>", opts)
+                vim.keymap.set("n", "<leader>o", "<cmd>CtrlPMRUFiles<cr>", opts)
+            end,
+        },
+        {
+            "jremmen/vim-ripgrep",
+            config = function()
+               vim.g["rg_highlight"] = true
             end
         },
         {
@@ -113,7 +117,10 @@ local plugins = {
             end,
 
         },
-        { "L3MON4D3/LuaSnip",         lazy = true },
+        {
+            "L3MON4D3/LuaSnip",
+            lazy = true
+        },
         {
             "hrsh7th/nvim-cmp",
             event = "InsertEnter",
@@ -173,18 +180,37 @@ local plugins = {
                 })
             end
         },
-
-        -- Themes
         {
-            "sabrinagannon/vim-garbage-oracle",
+            "ellisonleao/gruvbox.nvim",
             lazy = false,
             priority = 1000,
             config = function()
-                vim.o.background = "dark"
-                vim.cmd("colo garbage-oracle")
-            end,
-        },
+                require("gruvbox").setup({
+                    undercurl            = true,
+                    underline            = true,
+                    bold                 = true,
+                    italic               = {
+                        strings   = true,
+                        numbers   = true,
+                        comments  = false,
+                        operators = false,
+                        folds     = true,
+                    },
+                    strikethrough        = true,
+                    invert_selection     = true,
+                    invert_signs         = false,
+                    invert_tabline       = false,
+                    invert_intend_guides = true,
+                    inverse              = true,
+                    contrast             = "soft",
+                    dim_inactive         = false,
+                    transparent_mode     = false,
+                })
 
+                vim.o.background = "dark"
+                vim.cmd("colo gruvbox")
+            end
+        },
 
         -- Some tools
         { "numToStr/Comment.nvim" },
@@ -218,8 +244,10 @@ vim.diagnostic.config({
 })
 
 
-vim.keymap.set("n", "<leader>e", vim.cmd.Explore)
-vim.keymap.set("n", "<leader>r", vim.cmd.nohl)
+local opts_keybind = { noremap = true, silent = true }
+vim.keymap.set("n", '<leader>w', '<C-^>', opts_keybind)
+vim.keymap.set("n", "<leader>e", vim.cmd.Explore, opts_keybind)
+vim.keymap.set("n", "<leader>r", vim.cmd.nohl, opts_keybind)
 
 -- Support for the todoreadme/tor ft
 vim.filetype.add({
@@ -247,4 +275,8 @@ require("nvim-treesitter.parsers").get_parser_configs()["todoreadme"] = {
 }
 
 -- TODO: convert to a plugin with better suppoort for everything todoreadme
-vim.cmd([[command! TorSync !cd $HOME/todo;git add .;git commit -m 'Update README';git push ]])
+vim.cmd([[command! TorSync !cd $HOME/todo;git add .;git commit -m 'Update README';git push]])
+
+-- Markdown preview of current file using glow
+vim.cmd([[command! GlowPreviewMarkdown !glow %:S ]])
+

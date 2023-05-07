@@ -63,10 +63,9 @@ require("neodev").setup()
 local lspconfig = require("lspconfig")
 
 require("mason-lspconfig").setup_handlers({
-    function(server_name)
-        -- called for each installed language server
-        -- without a dedicated handler
-        require("lspconfig")[server_name].setup({})
+    function(lsp)
+        -- called for each installed language server without a dedicated handler
+        require("lspconfig")[lsp].setup({})
     end,
     ["lua_ls"] = function()
         lspconfig.lua_ls.setup({
@@ -86,19 +85,18 @@ require("mason-lspconfig").setup_handlers({
 vim.api.nvim_create_autocmd("LspAttach", {
     group = vim.api.nvim_create_augroup("UserLspConfig", {}),
     callback = function(event)
-        local opts = { buffer = event.buf }
-        vim.keymap.set("n", "<leader>re", vim.lsp.buf.rename, opts)
-        vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, opts)
-        vim.keymap.set("n", "gl", vim.lsp.buf.definition, opts)
-        vim.keymap.set("n", "gi", vim.lsp.buf.implementation, opts)
+        local opts = { buffer = event.buf, noremap = true }
+        vim.keymap.set("n", "F", vim.diagnostic.open_float, opts)
         vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
         vim.keymap.set("n", "S", vim.lsp.buf.signature_help, opts)
-        vim.keymap.set("n", "F", vim.diagnostic.open_float, opts)
-        vim.keymap.set("n", "<C-k>", vim.lsp.buf.signature_help, opts)
+        vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, opts)
+        vim.keymap.set("n", "<leader>re", vim.lsp.buf.rename, opts)
         vim.keymap.set("n", "<leader>tq", vim.lsp.buf.type_definition, opts)
-        vim.keymap.set("n", "<leader>we", function()
+        vim.keymap.set("n", "gi", vim.lsp.buf.implementation, opts)
+        vim.keymap.set("n", "gl", vim.lsp.buf.definition, opts)
+        -- NOTE: vmode formatting only works if the lsp supports it
+        vim.keymap.set({ "n", "v" }, "<leader>we", function()
             vim.lsp.buf.format({ async = true })
         end, opts)
-        vim.cmd("command! EFormat lua vim.lsp.buf.format({ async = true })")
     end
 })

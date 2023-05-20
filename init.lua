@@ -148,34 +148,12 @@ local plugins = {
             end
         },
         {
-            "ellisonleao/gruvbox.nvim",
+            "haxibami/urara.vim",
             lazy = false,
             priority = 1000,
             config = function()
-                require("gruvbox").setup({
-                    undercurl            = true,
-                    underline            = true,
-                    bold                 = true,
-                    italic               = {
-                        strings   = true,
-                        numbers   = true,
-                        comments  = false,
-                        operators = false,
-                        folds     = true,
-                    },
-                    strikethrough        = true,
-                    invert_selection     = true,
-                    invert_signs         = false,
-                    invert_tabline       = false,
-                    invert_intend_guides = true,
-                    inverse              = true,
-                    contrast             = "soft",
-                    dim_inactive         = false,
-                    transparent_mode     = false,
-                })
-
                 vim.o.background = "dark"
-                vim.cmd("colo gruvbox")
+                vim.cmd.colorscheme("urara")
             end
         },
 

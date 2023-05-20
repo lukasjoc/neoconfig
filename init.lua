@@ -107,7 +107,6 @@ local plugins = {
             config = function()
                 local cmp     = require("cmp")
                 local luasnip = require("luasnip")
-                local window  = require("cmp.config.window")
                 cmp.setup({
                     snippet = {
                         expand = function(args)
@@ -116,8 +115,8 @@ local plugins = {
                     },
                     mapping = cmp.mapping.preset.insert({
                         -- INFO: Keep the single quotes
-                        ['<C-j>'] = cmp.mapping.scroll_docs(-4),
-                        ['<C-k>'] = cmp.mapping.scroll_docs(4),
+                        ['<C-d>'] = cmp.mapping.scroll_docs(-4),
+                        ['<C-u>'] = cmp.mapping.scroll_docs(4),
                         ['<C-c>'] = cmp.mapping.abort(),
                         ['<C-w>'] = cmp.mapping.confirm({
                             behavior = cmp.ConfirmBehavior.Insert,
@@ -131,18 +130,15 @@ local plugins = {
                         { name = "buffer",   keyword_length = 7 },
                         { name = "license",  keyword_length = 2 },
                     },
-                    window = {
-                        documentation = window.bordered()
-                    },
                     formatting = {
                         fields = { "menu", "abbr", "kind" },
                         format = function(entry, item)
                             local menu_icon = {
-                                nvim_lsp = "*",
+                                nvim_lsp = "LSP",
                                 luasnip  = "snip",
-                                buffer   = "**",
-                                path     = "..",
-                                license  = "?",
+                                buffer   = "BUF",
+                                path     = "PATH",
+                                license  = "LICENSE",
                             }
                             item.menu = menu_icon[entry.source.name]
                             return item

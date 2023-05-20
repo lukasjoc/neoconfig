@@ -64,17 +64,14 @@ local plugins = {
             }
         },
         {
-            "ctrlpvim/ctrlp.vim",
-            config = function()
-                local opts = { silent = true, noremap = true }
-                vim.keymap.set("n", "<leader>f", "<cmd>CtrlP<cr>", opts)
-                vim.keymap.set("n", "<leader>o", "<cmd>CtrlPMRUFiles<cr>", opts)
-            end,
+            "nvim-telescope/telescope.nvim",
+            tag = "0.1.1",
+            dependencies = { "nvim-lua/plenary.nvim" }
         },
         {
             "jremmen/vim-ripgrep",
             config = function()
-               vim.g["rg_highlight"] = true
+                vim.g["rg_highlight"] = true
             end
         },
         {
@@ -94,33 +91,7 @@ local plugins = {
         },
         { "williamboman/mason-lspconfig.nvim", priority = 998 },
         { "neovim/nvim-lspconfig",             priority = 998 },
-        {
-            "folke/trouble.nvim",
-            lazy = true,
-            config = function()
-                require("trouble").setup({
-                    height = 20,
-                    icons = false,
-                    fold_open = "v",
-                    fold_closed = ">",
-                    use_diagnostic_signs = true,
-                    indent_lines = false,
-                })
-
-                local opts = { silent = true, noremap = true }
-                vim.keymap.set("n", "<leader>xx", "<cmd>TroubleToggle<cr>", opts)
-                vim.keymap.set("n", "<leader>xw", "<cmd>TroubleToggle workspace_diagnostics<cr>", opts)
-                vim.keymap.set("n", "<leader>xd", "<cmd>TroubleToggle document_diagnostics<cr>", opts)
-                vim.keymap.set("n", "<leader>xl", "<cmd>TroubleToggle loclist<cr>", opts)
-                vim.keymap.set("n", "<leader>xq", "<cmd>TroubleToggle quickfix<cr>", opts)
-                vim.keymap.set("n", "gR", "<cmd>TroubleToggle lsp_references<cr>", opts)
-            end,
-
-        },
-        {
-            "L3MON4D3/LuaSnip",
-            lazy = true
-        },
+        { "L3MON4D3/LuaSnip",                  lazy = true },
         {
             "hrsh7th/nvim-cmp",
             event = "InsertEnter",
@@ -279,4 +250,3 @@ vim.cmd([[command! TorSync !cd $HOME/todo;git add .;git commit -m 'Update README
 
 -- Markdown preview of current file using glow
 vim.cmd([[command! GlowPreviewMarkdown !glow %:S ]])
-

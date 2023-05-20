@@ -42,6 +42,27 @@ require("colorizer").setup({
     user_default_options = { names = false, }
 })
 
+local builtin = require("telescope.builtin")
+local picky = function(picker)
+    local themes = require("telescope.themes")
+    local ivy = themes.get_ivy({
+        border = false,
+        shorten_path = true,
+        layout_config = {
+            height = 20,
+        }
+    })
+    return function() picker(ivy) end
+end
+
+vim.keymap.set("n", "<leader>ff", picky(builtin.find_files), {})
+vim.keymap.set("n", "<leader>fl", picky(builtin.current_buffer_fuzzy_find), {})
+vim.keymap.set("n", "<leader>fo", picky(builtin.oldfiles), {})
+vim.keymap.set("n", "<leader>fg", picky(builtin.live_grep), {})
+vim.keymap.set("n", "<leader>fs", picky(builtin.grep_string), {})
+vim.keymap.set("n", "<leader>fr", picky(builtin.resume), {})
+vim.keymap.set("n", "<leader>fb", picky(builtin.buffers), {})
+
 require("mason").setup({
     ui = {
         icons = {
@@ -94,9 +115,12 @@ vim.api.nvim_create_autocmd("LspAttach", {
         vim.keymap.set("n", "<leader>tq", vim.lsp.buf.type_definition, opts)
         vim.keymap.set("n", "gi", vim.lsp.buf.implementation, opts)
         vim.keymap.set("n", "gl", vim.lsp.buf.definition, opts)
+
         -- NOTE: vmode formatting only works if the lsp supports it
         vim.keymap.set({ "n", "v" }, "<leader>we", function()
             vim.lsp.buf.format({ async = true })
         end, opts)
+
+        vim.keymap.set("n", "<leader>fe", builtin.diagnostics, { buffer = 0, noremap = true })
     end
 })

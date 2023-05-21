@@ -55,13 +55,13 @@ local picky = function(picker)
     return function() picker(ivy) end
 end
 
-vim.keymap.set("n", "<leader>ff", picky(builtin.find_files), {})
-vim.keymap.set("n", "<leader>fl", picky(builtin.current_buffer_fuzzy_find), {})
-vim.keymap.set("n", "<leader>fo", picky(builtin.oldfiles), {})
-vim.keymap.set("n", "<leader>fg", picky(builtin.live_grep), {})
-vim.keymap.set("n", "<leader>fs", picky(builtin.grep_string), {})
-vim.keymap.set("n", "<leader>fr", picky(builtin.resume), {})
-vim.keymap.set("n", "<leader>fb", picky(builtin.buffers), {})
+vim.keymap.set("n", "<leader><leader>f", picky(builtin.find_files), {})
+vim.keymap.set("n", "<leader><leader>l", picky(builtin.current_buffer_fuzzy_find), {})
+vim.keymap.set("n", "<leader><leader>o", picky(builtin.oldfiles), {})
+vim.keymap.set("n", "<leader><leader>g", picky(builtin.live_grep), {})
+vim.keymap.set("n", "<leader><leader>s", picky(builtin.grep_string), {})
+vim.keymap.set("n", "<leader><leader>r", picky(builtin.resume), {})
+vim.keymap.set("n", "<leader><leader>b", picky(builtin.buffers), {})
 
 require("mason").setup({
     ui = {
@@ -121,6 +121,18 @@ vim.api.nvim_create_autocmd("LspAttach", {
             vim.lsp.buf.format({ async = true })
         end, opts)
 
-        vim.keymap.set("n", "<leader>fe", builtin.diagnostics, { buffer = 0, noremap = true })
+        vim.keymap.set("n", "<leader><leader>e", picky(builtin.diagnostics), { buffer = 0, noremap = true })
     end
 })
+
+local snip = require("luasnip")
+local rust_snips = {
+    snip.snippet({
+        trig = "skip",
+        namr = "rustfmt::skip",
+        dscr = "add #[rustfmt::skip]",
+    }, { snip.text_node("#[rustfmt::skip]") })
+}
+
+snip.add_snippets(nil, { rust = rust_snips })
+

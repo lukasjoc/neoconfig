@@ -178,6 +178,7 @@ local plugins = {
                         Cursor = { fg = c.vscDarkBlue, bg = c.vscLightGreen, bold = true },
                     }
                 })
+                -- vim.opt.background = 'light';
                 require('vscode').load()
             end
         },
@@ -195,6 +196,7 @@ local plugins = {
         { "numToStr/Comment.nvim" },
         { "NvChad/nvim-colorizer.lua" },
         { "RRethy/nvim-align" },
+        { "sagarrakshe/toggle-bool" },
         {
             "folke/neodev.nvim",
             ft = "lua",

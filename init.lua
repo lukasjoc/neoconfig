@@ -50,7 +50,6 @@ local plugins = {
         {
             priority = 998,
             "williamboman/mason.nvim",
-            build = ":MasonUpdate"
         },
         {
             priority = 999,
@@ -230,7 +229,14 @@ vim.keymap.set("n", '<leader>w', '<C-^>', opts_keybind)
 vim.keymap.set("n", "<leader>e", vim.cmd.Explore, opts_keybind)
 vim.keymap.set("n", "<leader>r", vim.cmd.nohl, opts_keybind)
 
--- Support for the todoreadme/tor ft
+-- TODO: for now fine but it should be a lua plugin
+vim.cmd([[
+    nnoremap <leader>t :execute '!open-with '
+    \ . shellescape(substitute(expand('<cWORD>'), '#', '\\#', 'g'))
+    \ <CR>
+]])
+
+-- Support for the todoreadme/tor filetype
 vim.filetype.add({
     extension = {
         tor        = "todoreadme",

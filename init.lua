@@ -200,6 +200,7 @@ local plugins = {
             "folke/neodev.nvim",
             ft = "lua",
         },
+        { "ionide/Ionide-vim" },
     }
 }
 require("lazy").setup(plugins)
@@ -262,7 +263,12 @@ require("nvim-treesitter.parsers").get_parser_configs()["todoreadme"] = {
 }
 
 -- TODO: convert to a plugin with better suppoort for everything todoreadme
-vim.cmd([[command! TorSync !cd $HOME/todo;git add .;git commit -m 'Update README';git push]])
+vim.cmd([[command! TorSync !cd $HOME/todo
+    \ ;git pull
+    \ ;git add .
+    \ ;git commit -m 'Update README'
+    \ ;git push
+]])
 
 -- Markdown preview of current file using glow
 vim.cmd([[command! GlowPreviewMarkdown !glow %:S ]])

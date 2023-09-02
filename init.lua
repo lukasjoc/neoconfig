@@ -77,16 +77,6 @@ local plugins = {
             "lewis6991/gitsigns.nvim",
             lazy = true,
             event = { "BufReadPre", "BufNewFile" },
-            opts = {
-                signs = {
-                    add = { text = " " },
-                    change = { text = " " },
-                    changedelete = { text = "-" },
-                    delete = { text = "d" },
-                    topdelete = { text = "-" },
-                    untracked = { text = "u" },
-                },
-            },
         },
         { "williamboman/mason-lspconfig.nvim", priority = 998 },
         { "neovim/nvim-lspconfig",             priority = 998 },

@@ -136,6 +136,7 @@ local plugins = {
                 })
             end
         },
+        { "ngscheurich/dromad-vim" },
         {
             "Mofiqul/vscode.nvim",
             lazy = false,

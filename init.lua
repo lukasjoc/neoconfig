@@ -68,12 +68,6 @@ local plugins = {
             dependencies = { "nvim-lua/plenary.nvim" }
         },
         {
-            "jremmen/vim-ripgrep",
-            config = function()
-                vim.g["rg_highlight"] = true
-            end
-        },
-        {
             "lewis6991/gitsigns.nvim",
             lazy = true,
             event = { "BufReadPre", "BufNewFile" },
@@ -136,7 +130,6 @@ local plugins = {
                 })
             end
         },
-        { "ngscheurich/dromad-vim" },
         {
             "Mofiqul/vscode.nvim",
             lazy = false,

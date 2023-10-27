@@ -1,4 +1,6 @@
 print("Have a nice day! =)")
+require("neoconf").setup()
+require("neodev").setup()
 
 require("nvim-treesitter.configs").setup({
     ensure_installed = {
@@ -72,24 +74,19 @@ require("mason").setup({
         }
     }
 })
-
 require("mason-lspconfig").setup({
     ensure_installed = {
         "lua_ls",
-        "rust_analyzer",
-    }
+        "volar",
+        "tsserver",
+        "eslint",
+    },
 })
 
-require("neodev").setup()
-local lspconfig = require("lspconfig")
-
+local lspc = require("lspconfig")
 require("mason-lspconfig").setup_handlers({
-    function(lsp)
-        -- called for each installed language server without a dedicated handler
-        require("lspconfig")[lsp].setup({})
-    end,
     ["lua_ls"] = function()
-        lspconfig.lua_ls.setup({
+        lspc.lua_ls.setup({
             filetypes = { "lua" },
             single_file_support = true,
             settings = {
@@ -101,7 +98,23 @@ require("mason-lspconfig").setup_handlers({
             }
         })
     end,
+    function(lsp)
+        local config = {}
+        -- "Takeover Mode" Support for volar over tsserver
+        if require("neoconf").get(lsp .. ".disable") then return; end
+        if lsp == "volar" then
+            config.filetypes = {
+                'typescript', 'javascript', 'javascriptreact',
+                'typescriptreact', 'vue', 'json'
+            }
+        end
+        if lsp == "eslint" then
+            config.filetypes = { "vue", "typescript", "javascript" }
+        end
+        lspc[lsp].setup(config)
+    end,
 })
+
 
 vim.api.nvim_create_autocmd("LspAttach", {
     group = vim.api.nvim_create_augroup("UserLspConfig", {}),
@@ -135,4 +148,3 @@ local rust_snips = {
 }
 
 snip.add_snippets(nil, { rust = rust_snips })
-

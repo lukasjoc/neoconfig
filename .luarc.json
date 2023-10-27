@@ -1,0 +1,35 @@
+{
+    "diagnostics.disable": [
+        "missing-fields"
+    ],
+    "workspace.library": [
+        "/home/lukasjoc/.local/share/nvim/lazy/neodev.nvim/types/stable",
+        "/usr/local/share/nvim/runtime/lua",
+        "/home/lukasjoc/.local/share/nvim/lazy/cmp-nvim-lsp/lua",
+        "/home/lukasjoc/.local/share/nvim/lazy/vscode.nvim/lua",
+        "/home/lukasjoc/.local/share/nvim/lazy/mason.nvim/lua",
+        "/home/lukasjoc/.local/share/nvim/lazy/cmp-buffer/lua",
+        "/home/lukasjoc/.local/share/nvim/lazy/Comment.nvim/lua",
+        "/home/lukasjoc/.local/share/nvim/lazy/mason-lspconfig.nvim/lua",
+        "/home/lukasjoc/.local/share/nvim/lazy/cmp-path/lua",
+        "/home/lukasjoc/.local/share/nvim/lazy/nvim-colorizer.lua/lua",
+        "/home/lukasjoc/.local/share/nvim/lazy/nvim-treesitter-textobjects/lua",
+        "/home/lukasjoc/.local/share/nvim/lazy/cmp-cmdline/lua",
+        "/home/lukasjoc/.local/share/nvim/lazy/gitsigns.nvim/lua",
+        "/home/lukasjoc/.local/share/nvim/lazy/nvim-treesitter/lua",
+        "/home/lukasjoc/.local/share/nvim/lazy/telescope.nvim/lua",
+        "/home/lukasjoc/.local/share/nvim/lazy/neoconf.nvim/lua",
+        "/home/lukasjoc/.local/share/nvim/lazy/LuaSnip/lua",
+        "/home/lukasjoc/.local/share/nvim/lazy/cmp-license/lua",
+        "/home/lukasjoc/.local/share/nvim/lazy/nvim-align/lua",
+        "/home/lukasjoc/.local/share/nvim/lazy/plenary.nvim/lua",
+        "/home/lukasjoc/.local/share/nvim/lazy/nvim-cmp/lua",
+        "/home/lukasjoc/.local/share/nvim/lazy/cmp_luasnip/lua",
+        "/home/lukasjoc/.local/share/nvim/lazy/nvim-lspconfig/lua",
+        "/home/lukasjoc/.local/share/nvim/lazy/lazy.nvim/lua",
+        "/home/lukasjoc/.local/share/nvim/lazy/neodev.nvim/lua",
+        "/home/lukasjoc/.local/share/nvim/lazy/neoconf.nvim/types",
+        "/home/lukasjoc/.local/share/nvim/lazy/neoconf.nvim/types/lua",
+        "${3rd}/luv/library"
+    ]
+}

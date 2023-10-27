@@ -77,16 +77,6 @@ local plugins = {
             "lewis6991/gitsigns.nvim",
             lazy = true,
             event = { "BufReadPre", "BufNewFile" },
-            opts = {
-                signs = {
-                    add = { text = " " },
-                    change = { text = " " },
-                    changedelete = { text = "-" },
-                    delete = { text = "d" },
-                    topdelete = { text = "-" },
-                    untracked = { text = "u" },
-                },
-            },
         },
         { "williamboman/mason-lspconfig.nvim", priority = 998 },
         { "neovim/nvim-lspconfig",             priority = 998 },
@@ -153,14 +143,11 @@ local plugins = {
             config = function()
                 local c = require('vscode.colors').get_colors()
                 require('vscode').setup({
-                    -- Alternatively set style in setup
-                    -- style = 'light'
-
                     -- Enable transparent background
                     transparent = false,
 
                     -- Enable italic comment
-                    italic_comments = true,
+                    italic_comments = false,
 
                     -- Disable nvim-tree background color
                     disable_nvimtree_bg = true,
@@ -181,16 +168,6 @@ local plugins = {
                 require('vscode').load()
             end
         },
-        {
-            "haxibami/urara.vim",
-            lazy = false,
-            priority = 1000,
-            config = function()
-                vim.o.background = "dark"
-                -- vim.cmd.colorscheme("urara")
-            end
-        },
-
         -- Some tools
         { "numToStr/Comment.nvim" },
         { "NvChad/nvim-colorizer.lua" },
@@ -200,7 +177,7 @@ local plugins = {
             "folke/neodev.nvim",
             ft = "lua",
         },
-        { "ionide/Ionide-vim" },
+        { "folke/neoconf.nvim", },
     }
 }
 require("lazy").setup(plugins)

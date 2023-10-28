@@ -32,6 +32,10 @@ vim.g.netrw_banner = 0
 vim.g.netrw_fastbrowse = 1
 vim.g.netrw_liststyle = 1
 
+-- " Dont autmatically add commented newlines
+-- au BufEnter * set fo-=c fo-=r fo-=o
+vim.cmd("au BufEnter * set fo-=c fo-=r fo-=0")
+
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
     vim.fn.system({

@@ -4,14 +4,12 @@ require("neodev").setup()
 
 require("nvim-treesitter.configs").setup({
     ensure_installed = {
-        "vim", "lua", "c", "make",
-        "rust", "commonlisp", "cpp",
-        "perl", "php", "python",
-        "javascript", "jsdoc", "typescript", "vue", "html", "css",
-        "go", "gomod", "gowork", "gosum",
-        "git_rebase", "gitignore", "gitcommit", "gitattributes",
-        "bash", "diff", "dockerfile", "toml", "yaml", "json", "ini",
-        "markdown", "sql", "comment",
+        "vim", "lua", "c", "perl", "bash",
+        -- "javascript", "jsdoc", "typescript", "vue", "html", "css",
+        -- "go", "gomod", "gowork", "gosum",
+        -- "git_rebase", "gitignore", "gitcommit", "gitattributes",
+        -- "bash", "diff", "dockerfile", "toml", "yaml", "json", "ini",
+        -- "markdown", "sql", "comment",
     },
     sync_install = true,
     auto_instal = true,
@@ -128,12 +126,10 @@ vim.api.nvim_create_autocmd("LspAttach", {
         vim.keymap.set("n", "<leader>tq", vim.lsp.buf.type_definition, opts)
         vim.keymap.set("n", "gi", vim.lsp.buf.implementation, opts)
         vim.keymap.set("n", "gl", vim.lsp.buf.definition, opts)
-
         -- NOTE: vmode formatting only works if the lsp supports it
         vim.keymap.set({ "n", "v" }, "<leader>we", function()
             vim.lsp.buf.format({ async = true })
         end, opts)
-
         vim.keymap.set("n", "<leader><leader>e", picky(builtin.diagnostics), { buffer = 0, noremap = true })
     end
 })

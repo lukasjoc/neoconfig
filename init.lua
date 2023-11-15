@@ -47,24 +47,18 @@ vim.opt.rtp:prepend(lazypath)
 
 local plugins = {
     spec = {
+        { "williamboman/mason.nvim", },
         {
-            priority = 998,
-            "williamboman/mason.nvim",
-        },
-        {
-            priority = 999,
             "nvim-treesitter/nvim-treesitter",
             build = ":TSUpdate",
             config = function()
-                require("nvim-treesitter.install").update({ with_sync = true })
+                local tsinstall = require("nvim-treesitter.install")
+                tsinstall.update({ with_sync = true })
             end,
-            dependencies = {
-                "nvim-treesitter/nvim-treesitter-textobjects"
-            }
         },
         {
             "nvim-telescope/telescope.nvim",
-            tag = "0.1.1",
+            tag = "0.1.4",
             dependencies = { "nvim-lua/plenary.nvim" }
         },
         {

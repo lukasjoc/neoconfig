@@ -1,15 +1,16 @@
-print("Have a nice day! =)")
+print("Have a nice day hacking! *<*")
+
+-- INFO: those have to be at the very start of the file
 require("neoconf").setup()
 require("neodev").setup()
 
 require("nvim-treesitter.configs").setup({
     ensure_installed = {
         "vim", "lua", "c", "perl", "bash",
-        -- "javascript", "jsdoc", "typescript", "vue", "html", "css",
-        -- "go", "gomod", "gowork", "gosum",
-        -- "git_rebase", "gitignore", "gitcommit", "gitattributes",
-        -- "bash", "diff", "dockerfile", "toml", "yaml", "json", "ini",
-        -- "markdown", "sql", "comment",
+        "javascript", "jsdoc", "typescript", "vue", "html", "css",
+        "go", "gomod", "gowork", "gosum",
+        "bash", "diff", "dockerfile", "toml", "yaml", "json", "ini",
+        "markdown", "sql",
     },
     sync_install = true,
     auto_instal = true,
@@ -126,7 +127,6 @@ vim.api.nvim_create_autocmd("LspAttach", {
         vim.keymap.set("n", "<leader>tq", vim.lsp.buf.type_definition, opts)
         vim.keymap.set("n", "gi", vim.lsp.buf.implementation, opts)
         vim.keymap.set("n", "gl", vim.lsp.buf.definition, opts)
-        -- NOTE: vmode formatting only works if the lsp supports it
         vim.keymap.set({ "n", "v" }, "<leader>we", function()
             vim.lsp.buf.format({ async = true })
         end, opts)

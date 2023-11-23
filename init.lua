@@ -149,6 +149,10 @@ local plugins = {
                 require('vscode').load()
             end
         },
+        {
+            "kkoomen/vim-doge",
+            build = ":call doge#install()"
+        },
         { "numToStr/Comment.nvim" },
         { "NvChad/nvim-colorizer.lua" },
         { "RRethy/nvim-align" },

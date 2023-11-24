@@ -1,9 +1,7 @@
 # neoconfig
+> a minimal neovim config using lazy, mason, treesitter, coq_nvim, telescope and other tools
 
-> a simple neovim config using mason and lazy.nvim
-
-Install:
-
+Setup:
 ```bash
-git clone https://github.com/lukasjoc/neoconfig $HOME/.config/nvim
+git clone https://github.com/lukasjoc/neoconfig "$HOME"/.config/nvim
 ```

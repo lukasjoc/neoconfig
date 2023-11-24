@@ -31,11 +31,8 @@ vim.cmd([[set listchars=tab:\ \ ,trail:."]])
 vim.g.netrw_banner = 0
 vim.g.netrw_fastbrowse = 1
 vim.g.netrw_liststyle = 1
-
--- " Dont autmatically add commented newlines
--- au BufEnter * set fo-=c fo-=r fo-=o
+-- Dont autmatically add commented newlines
 vim.cmd("au BufEnter * set fo-=c fo-=r fo-=0")
-
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
     vim.fn.system({
@@ -43,192 +40,58 @@ if not vim.loop.fs_stat(lazypath) then
         "clone",
         "--filter=blob:none",
         "https://github.com/folke/lazy.nvim.git",
-        "--branch=stable",
+        "--branch=stable", -- latest stable release
         lazypath,
     })
 end
 vim.opt.rtp:prepend(lazypath)
 
-local plugins = {
-    spec = {
-        { "williamboman/mason.nvim", },
-        {
-            "nvim-treesitter/nvim-treesitter",
-            build = ":TSUpdate",
-            config = function()
-                local tsinstall = require("nvim-treesitter.install")
-                tsinstall.update({ with_sync = true })
-            end,
-        },
-        {
-            "nvim-telescope/telescope.nvim",
-            tag = "0.1.4",
-            dependencies = { "nvim-lua/plenary.nvim" }
-        },
-        {
-            "lewis6991/gitsigns.nvim",
-            lazy = true,
-            event = { "BufReadPre", "BufNewFile" },
-        },
-        { "williamboman/mason-lspconfig.nvim", priority = 998 },
-        { "neovim/nvim-lspconfig",             priority = 998 },
-        { "L3MON4D3/LuaSnip",                  lazy = true },
-        {
-            "hrsh7th/nvim-cmp",
-            event = "InsertEnter",
-            dependencies = {
-                { "hrsh7th/cmp-nvim-lsp" },
-                { "hrsh7th/cmp-buffer" },
-                { "hrsh7th/cmp-path" },
-                { "hrsh7th/cmp-cmdline" },
-                { "lukasjoc/cmp-license" },
-                { "L3MON4D3/LuaSnip" },
-                { "saadparwaiz1/cmp_luasnip" },
-            },
-            config = function()
-                local cmp     = require("cmp")
-                local luasnip = require("luasnip")
-                cmp.setup({
-                    snippet = {
-                        expand = function(args)
-                            luasnip.lsp_expand(args.body)
-                        end
-                    },
-                    mapping = cmp.mapping.preset.insert({
-                        -- INFO: Keep the single quotes
-                        ['<C-d>'] = cmp.mapping.scroll_docs(-4),
-                        ['<C-u>'] = cmp.mapping.scroll_docs(4),
-                        ['<C-c>'] = cmp.mapping.abort(),
-                        ['<C-w>'] = cmp.mapping.confirm({
-                            behavior = cmp.ConfirmBehavior.Insert,
-                            select = true
-                        }),
-                    }),
-                    sources = {
-                        { name = "nvim_lsp", keyword_length = 4 },
-                        { name = "luasnip",  keyword_length = 4 },
-                        { name = "path",     keyword_length = 4 },
-                        { name = "buffer",   keyword_length = 7 },
-                        { name = "license",  keyword_length = 2 },
-                    },
-                    formatting = {
-                        fields = { "menu", "abbr", "kind" },
-                        format = function(entry, item)
-                            local menu_icon = {
-                                nvim_lsp = "LSP",
-                                luasnip  = "snip",
-                                buffer   = "BUF",
-                                path     = "PATH",
-                                license  = "LICENSE",
-                            }
-                            item.menu = menu_icon[entry.source.name]
-                            return item
-                        end,
-                    },
-                })
-            end
-        },
-        {
-            "Mofiqul/vscode.nvim",
-            lazy = false,
-            priority = 1000,
-            config = function()
-                local c = require('vscode.colors').get_colors()
-                require('vscode').setup({
-                    transparent = false,
-                    italic_comments = false,
-                    disable_nvimtree_bg = true,
-                    color_overrides = {
-                        vscLineNumber = '#FFFFFF',
-                    },
-                    group_overrides = {
-                        Cursor = { fg = c.vscDarkBlue, bg = c.vscLightGreen, bold = true },
-                    }
-                })
-                -- vim.opt.background = 'light';
-                require('vscode').load()
-            end
-        },
-        {
-            "kkoomen/vim-doge",
-            build = ":call doge#install()"
-        },
-        { "numToStr/Comment.nvim" },
-        { "NvChad/nvim-colorizer.lua" },
-        { "RRethy/nvim-align" },
-        {
-            "folke/neodev.nvim",
-            ft = "lua",
-        },
-        { "folke/neoconf.nvim", },
-    }
-}
-require("lazy").setup(plugins)
-
-local sign = function(opts)
-    vim.fn.sign_define(opts.name, {
-        texthl = opts.name,
-        text = opts.text,
-        numhl = ""
-    })
+local plugins = {}
+local plugin_add = function(spec)
+    table.insert(plugins, spec)
 end
 
-sign({ name = "DiagnosticSignError", text = "e" })
-sign({ name = "DiagnosticSignWarn", text = "w" })
-sign({ name = "DiagnosticSignHint", text = "h" })
-sign({ name = "DiagnosticSignInfo", text = "i" })
+plugin_add({ "folke/neodev.nvim", ft = "lua" })
+plugin_add({ "folke/neoconf.nvim" })
+plugin_add({ "numToStr/Comment.nvim" })
+plugin_add({ "NvChad/nvim-colorizer.lua" })
+plugin_add({ "RRethy/nvim-align" })
+plugin_add({ "kkoomen/vim-doge", build = ":call doge#install()" })
+plugin_add({ "Mofiqul/vscode.nvim" })
+plugin_add({ "lewis6991/gitsigns.nvim" })
+plugin_add({ "nvim-lua/plenary.nvim" })
+plugin_add({ "nvim-telescope/telescope.nvim", tag = "0.1.4" })
+plugin_add({ "nvim-treesitter/nvim-treesitter", build = ":TSUpdate" })
+plugin_add({ "williamboman/mason.nvim" })
+plugin_add({ "williamboman/mason-lspconfig.nvim" })
+plugin_add({ "neovim/nvim-lspconfig" })
+plugin_add({ "ms-jpq/coq_nvim" })
+plugin_add({ "ms-jpq/coq.artifacts" })
+
+local opts = {}
+require("lazy").setup(plugins, opts)
+
+local sign_define = function(name, text)
+    local sign_spec = {
+        texthl = name,
+        text = text,
+        numhl = "",
+    }
+    vim.fn.sign_define(opts.name, sign_spec)
+end
+
+sign_define("DiagnosticSignInfo", "I")
+sign_define("DiagnosticSignHint", "H")
+sign_define("DiagnosticSignWarn", "W")
+sign_define("DiagnosticSignError", "E")
 
 vim.diagnostic.config({
-    -- remove inline lsp messages
+    -- INFO: hide inline stuff
     virtual_text = false,
     severity_sort = true,
 })
 
-
-local opts_keybind = { noremap = true, silent = true }
-vim.keymap.set("n", '<leader>w', '<C-^>', opts_keybind)
-vim.keymap.set("n", "<leader>e", vim.cmd.Explore, opts_keybind)
-vim.keymap.set("n", "<leader>r", vim.cmd.nohl, opts_keybind)
-
--- TODO: for now fine but it should be a lua plugin
-vim.cmd([[
-    nnoremap <leader>t :execute '!open-with '
-    \ . shellescape(substitute(expand('<cWORD>'), '#', '\\#', 'g'))
-    \ <CR>
-]])
-
--- Support for the todoreadme/tor filetype
-vim.filetype.add({
-    extension = {
-        tor        = "todoreadme",
-        todoreadme = "todoreadme",
-    },
-})
-
-vim.cmd("hi link @todoreadmeHeader Identifier")
-vim.cmd("hi link @todoreadmeCategory Special")
-vim.cmd("hi link @todoreadmeDelimiter Delimiter")
-
-vim.treesitter.language.register("todoreadme", "tor")
-
-require("nvim-treesitter.parsers").get_parser_configs()["todoreadme"] = {
-    install_info                   = {
-        url = "~/fun/tree-sitter-todoreadme", -- local path or git repo
-        files = { "src/parser.c" },
-    },
-    filetype                       = "tor", -- if filetype does not match the parser name
-    branch                         = "main",
-    generate_requires_npm          = false, -- if stand-alone parser without npm dependencies
-    requires_generate_from_grammar = false, -- if folder contains pre-generated src/parser.c
-}
-
--- TODO: convert to a plugin with better suppoort for everything todoreadme
-vim.cmd([[command! TorSync !cd $HOME/todo
-    \ ;git pull
-    \ ;git add .
-    \ ;git commit -m 'Update README'
-    \ ;git push
-]])
-
--- Markdown preview of current file using glow
-vim.cmd([[command! GlowPreviewMarkdown !glow %:S ]])
+local keymap_set_opts = { noremap = true, silent = true }
+vim.keymap.set("n", '<leader>w', '<C-^>', keymap_set_opts)
+vim.keymap.set("n", "<leader>e", vim.cmd.Explore, keymap_set_opts)
+vim.keymap.set("n", "<leader>r", vim.cmd.nohl, keymap_set_opts)

@@ -46,6 +46,56 @@ vim.keymap.set("n", "<leader><leader>s", define_picker(telescope_builtin.grep_st
 vim.keymap.set("n", "<leader><leader>r", define_picker(telescope_builtin.resume), keymap_set_opts)
 vim.keymap.set("n", "<leader><leader>b", define_picker(telescope_builtin.buffers), keymap_set_opts)
 
+local cmp = require("cmp")
+local luasnip = require("luasnip")
+
+cmp.setup({
+    snippet = {
+        expand = function(args) luasnip.lsp_expand(args.body) end,
+    },
+    mapping = cmp.mapping.preset.insert({
+        ['<C-b>'] = cmp.mapping.scroll_docs(-4),
+        ['<C-f>'] = cmp.mapping.scroll_docs(4),
+        ['<C-Space>'] = cmp.mapping.complete(),
+        ['<C-e>'] = cmp.mapping.abort(),
+        ['<C-w>'] = cmp.mapping.confirm({ select = false }),
+    }),
+    sources = cmp.config.sources({
+        { name = 'nvim_lsp' },
+        { name = 'luasnip' },
+    }, {
+        { name = 'buffer' },
+    })
+})
+
+-- Set configuration for specific filetype.
+cmp.setup.filetype('gitcommit', {
+    sources = cmp.config.sources({
+        { name = 'git' }, -- You can specify the `git` source if [you were installed it](https://github.com/petertriho/cmp-git).
+    }, {
+        { name = 'buffer' },
+    })
+})
+
+-- Use buffer source for `/` and `?` (if you enabled `native_menu`, this won't work anymore).
+cmp.setup.cmdline({ '/', '?' }, {
+    mapping = cmp.mapping.preset.cmdline(),
+    sources = {
+        { name = 'buffer' }
+    }
+})
+
+-- Use cmdline & path source for ':' (if you enabled `native_menu`, this won't work anymore).
+cmp.setup.cmdline(':', {
+    mapping = cmp.mapping.preset.cmdline(),
+    sources = cmp.config.sources({
+        { name = 'path' }
+    }, {
+        { name = 'cmdline' }
+    })
+})
+
+
 local mason = require("mason")
 mason.setup()
 
@@ -61,11 +111,9 @@ mason_lspconfig.setup({
 })
 
 local lspconfig = require("lspconfig")
--- TODO: there is a way to autostart this shit
-vim.cmd(":COQnow --shut-up")
-local coq = require("coq")
+local cmp_lsp = require("cmp_nvim_lsp")
 local define_lsp = function(lsp, config)
-    lspconfig[lsp].setup(coq.lsp_ensure_capabilities(config))
+    lspconfig[lsp].setup({ capabilities = cmp_lsp.default_capabilities() })
 end
 
 local default_handler_func = function(lsp)

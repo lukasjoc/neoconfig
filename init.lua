@@ -72,6 +72,9 @@ plugin_add({ "hrsh7th/nvim-cmp" })
 plugin_add({ "L3MON4D3/LuaSnip" })
 plugin_add({ "saadparwaiz1/cmp_luasnip" })
 plugin_add({ "Mofiqul/vscode.nvim" })
+-- Might try this one instead but vim version seems ok
+--    : https://github.com/neanias/everforest-nvim
+plugin_add({ "sainnhe/everforest" })
 
 local opts = {}
 require("lazy").setup(plugins, opts)
@@ -100,3 +103,23 @@ local keymap_set_opts = { noremap = true, silent = true }
 vim.keymap.set("n", '<leader>w', '<C-^>', keymap_set_opts)
 vim.keymap.set("n", "<leader>e", vim.cmd.Explore, keymap_set_opts)
 vim.keymap.set("n", "<leader>r", vim.cmd.nohl, keymap_set_opts)
+
+vim.filetype.add({
+    extension = {
+        stacks = "stacks",
+    },
+})
+
+vim.treesitter.language.register("stacks", "stacks")
+local parser_config = require("nvim-treesitter.parsers").get_parser_configs()
+parser_config.stacks = {
+    install_info                   = {
+        url   = "~/fun/stacks/tree-sitter", -- local path or git repo
+        files = { "src/parser.c" },
+    },
+    filetype                       = "stacks", -- if filetype does not match the parser name
+    branch                         = "main",
+    generate_requires_npm          = false,    -- if stand-alone parser without npm dependencies
+    requires_generate_from_grammar = false,    -- if folder contains pre-generated src/parser.c
+}
+

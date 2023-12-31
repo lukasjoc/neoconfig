@@ -1,6 +1,6 @@
 local treesitter = require("nvim-treesitter.configs")
 local treesitter_spec = {
-    ensure_installed = { "vim", "lua", "c", "bash" },
+    ensure_installed = { "vim", "lua", "c", "bash", "vimdoc" },
     sync_install = true,
     auto_install = false,
     ignore_install = { "java", "fish", "erlang" },

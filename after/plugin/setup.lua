@@ -113,7 +113,8 @@ mason_lspconfig.setup({
 local lspconfig = require("lspconfig")
 local cmp_lsp = require("cmp_nvim_lsp")
 local define_lsp = function(lsp, config)
-    lspconfig[lsp].setup({ capabilities = cmp_lsp.default_capabilities() })
+    config.capabilities = cmp_lsp.default_capabilities()
+    lspconfig[lsp].setup(config)
 end
 
 local default_handler_func = function(lsp)
@@ -122,8 +123,8 @@ local default_handler_func = function(lsp)
     if require("neoconf").get(lsp .. ".disable") then return; end
     if lsp == "volar" then
         config.filetypes = {
-            'typescript', 'javascript', 'javascriptreact',
-            'typescriptreact', 'vue', 'json'
+            "typescript", "javascript", "javascriptreact",
+            "typescriptreact", "vue", "json"
         }
     end
     if lsp == "eslint" then

@@ -72,8 +72,6 @@ plugin_add({ "hrsh7th/nvim-cmp" })
 plugin_add({ "L3MON4D3/LuaSnip" })
 plugin_add({ "saadparwaiz1/cmp_luasnip" })
 plugin_add({ "Mofiqul/vscode.nvim" })
--- Might try this one instead but vim version seems ok
---    : https://github.com/neanias/everforest-nvim
 plugin_add({ "sainnhe/everforest" })
 
 local opts = {}

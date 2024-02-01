@@ -60,6 +60,7 @@
 (krec) @keyword
 (kreturn) @keyword
 (kmodule) @namespace
+(kexport) @keyword
 (terminals) @punctuation
 (arg) @variable
 (arg_list) @field

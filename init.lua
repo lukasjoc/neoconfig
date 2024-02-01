@@ -24,6 +24,7 @@ vim.opt.laststatus = 0
 vim.opt.termguicolors = true
 vim.opt.colorcolumn = "92"
 vim.opt.completeopt = { "menu", "menuone", "noselect" }
+vim.opt.smoothscroll = true;
 vim.o.updatetime = 250
 vim.o.timeout = true
 vim.o.timeoutlen = 300
@@ -72,8 +73,6 @@ plugin_add({ "hrsh7th/nvim-cmp" })
 plugin_add({ "L3MON4D3/LuaSnip" })
 plugin_add({ "saadparwaiz1/cmp_luasnip" })
 plugin_add({ "Mofiqul/vscode.nvim" })
--- Might try this one instead but vim version seems ok
---    : https://github.com/neanias/everforest-nvim
 plugin_add({ "sainnhe/everforest" })
 
 local opts = {}
@@ -104,14 +103,12 @@ vim.keymap.set("n", '<leader>w', '<C-^>', keymap_set_opts)
 vim.keymap.set("n", "<leader>e", vim.cmd.Explore, keymap_set_opts)
 vim.keymap.set("n", "<leader>r", vim.cmd.nohl, keymap_set_opts)
 
-vim.filetype.add({
-    extension = {
-        stacks = "stacks",
-    },
-})
-
+-- Stacks setup (for ft specific stuff see after/ftplugin/stacks.lua)
+vim.filetype.add({ extension = { stacks = "stacks" } })
 vim.treesitter.language.register("stacks", "stacks")
+
 local parser_config = require("nvim-treesitter.parsers").get_parser_configs()
+
 parser_config.stacks = {
     install_info                   = {
         url   = "~/fun/stacks/tree-sitter", -- local path or git repo
@@ -122,4 +119,3 @@ parser_config.stacks = {
     generate_requires_npm          = false,    -- if stand-alone parser without npm dependencies
     requires_generate_from_grammar = false,    -- if folder contains pre-generated src/parser.c
 }
-

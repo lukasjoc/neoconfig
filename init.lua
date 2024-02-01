@@ -24,7 +24,6 @@ vim.opt.laststatus = 0
 vim.opt.termguicolors = true
 vim.opt.colorcolumn = "92"
 vim.opt.completeopt = { "menu", "menuone", "noselect" }
-vim.opt.smoothscroll = true;
 vim.o.updatetime = 250
 vim.o.timeout = true
 vim.o.timeoutlen = 300

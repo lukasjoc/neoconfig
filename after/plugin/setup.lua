@@ -161,13 +161,17 @@ vim.api.nvim_create_autocmd("LspAttach", {
         vim.keymap.set("n", "S", vim.lsp.buf.signature_help, opts)
         vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, opts)
         vim.keymap.set("n", "<leader>re", vim.lsp.buf.rename, opts)
-        vim.keymap.set("n", "<leader>tq", vim.lsp.buf.type_definition, opts)
         vim.keymap.set("n", "gi", vim.lsp.buf.implementation, opts)
         vim.keymap.set("n", "gl", vim.lsp.buf.definition, opts)
         vim.keymap.set({ "n", "v" }, "<leader>we", function()
+            -- TODO:
+            -- This is a bad. I need a way to use eslint here, instead of auto formatting,
+            -- in typescript projects, otherwise keep this.
             vim.lsp.buf.format({ async = true })
         end, opts)
-        vim.keymap.set("n", "<leader><leader>e", define_picker(telescope_builtin.diagnostics),
-            { unpack(opts), buffer = 0 })
+        vim.keymap.set("n", "<leader><leader>e",
+            define_picker(telescope_builtin.diagnostics), { unpack(opts), buffer = 0 })
+        vim.keymap.set("n", "U",
+            define_picker(telescope_builtin.lsp_references), { unpack(opts), buffer = 0 })
     end
 })

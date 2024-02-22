@@ -164,9 +164,11 @@ vim.api.nvim_create_autocmd("LspAttach", {
         vim.keymap.set("n", "gi", vim.lsp.buf.implementation, opts)
         vim.keymap.set("n", "gl", vim.lsp.buf.definition, opts)
         vim.keymap.set({ "n", "v" }, "<leader>we", function()
-            -- TODO:
-            -- This is a bad. I need a way to use eslint here, instead of auto formatting,
-            -- in typescript projects, otherwise keep this.
+            local eslint_lsp_active = #vim.lsp.get_active_clients({ name = "eslint_lsp" })
+            if eslint_lsp_active ~= 1 then
+                vim.api.nvim_command("EslintFixAll")
+                return;
+            end
             vim.lsp.buf.format({ async = true })
         end, opts)
         vim.keymap.set("n", "<leader><leader>e",

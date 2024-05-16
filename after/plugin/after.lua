@@ -17,11 +17,24 @@ print("Have a nice day hacking! (*<*)")
 --         },
 --     }
 -- })
-
+-- vscode.load();
+-- vim.cmd([[ color morning ]])
+-- vim.cmd([[ set bg=light ]])
 -- vim.cmd([[ let g:everforest_better_performance = 1 ]])
 -- vim.cmd([[ let g:everforest_background = "hard" ]])
 -- vim.cmd("colorscheme everforest")
-vim.cmd("colorscheme quiet")
+
+-- vim.cmd [[
+--     let g:monotone_emphasize_comments = 1
+--     " let g:monotone_color = [140, 60, 85] " Green-ish
+--     let g:monotone_color = [270, 25, 90] "Black
+--     let g:monotone_secondary_hue_offset = 10
+--     colorscheme monotone
+-- ]]
+
+local grail = require("grail")
+grail.setup()
+grail.load()
 
 local neoconf = require("neoconf")
 neoconf.setup()

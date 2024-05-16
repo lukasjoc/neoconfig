@@ -177,3 +177,6 @@ vim.api.nvim_create_autocmd("LspAttach", {
             define_picker(telescope_builtin.lsp_references), { unpack(opts), buffer = 0 })
     end
 })
+
+local oil = require("oil")
+oil.setup()

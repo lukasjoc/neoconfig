@@ -24,6 +24,7 @@ vim.opt.laststatus = 0
 vim.opt.termguicolors = true
 vim.opt.colorcolumn = "92"
 vim.opt.completeopt = { "menu", "menuone", "noselect" }
+-- vim.opt.smoothscroll = true; Seems like this is not supported on v0.9.5
 vim.o.updatetime = 250
 vim.o.timeout = true
 vim.o.timeoutlen = 300
@@ -47,32 +48,37 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 local plugins = {}
-local plugin_add = function(spec)
-    table.insert(plugins, spec)
-end
+local plugin_add = function(spec) table.insert(plugins, spec); end
 
 plugin_add({ "folke/neodev.nvim", ft = "lua" })
 plugin_add({ "folke/neoconf.nvim" })
-plugin_add({ "numToStr/Comment.nvim" })
-plugin_add({ "NvChad/nvim-colorizer.lua" })
-plugin_add({ "RRethy/nvim-align" })
-plugin_add({ "kkoomen/vim-doge", build = ":call doge#install()" })
-plugin_add({ "lewis6991/gitsigns.nvim" })
+
 plugin_add({ "nvim-lua/plenary.nvim" })
-plugin_add({ "nvim-telescope/telescope.nvim", tag = "0.1.4" })
+
+plugin_add({ "nvim-telescope/telescope.nvim", tag = "0.1.6" })
 plugin_add({ "nvim-treesitter/nvim-treesitter", build = ":TSUpdate" })
 plugin_add({ "williamboman/mason.nvim" })
 plugin_add({ "williamboman/mason-lspconfig.nvim" })
 plugin_add({ "neovim/nvim-lspconfig" })
+
 plugin_add({ "hrsh7th/cmp-nvim-lsp" })
 plugin_add({ "hrsh7th/cmp-buffer" })
 plugin_add({ "hrsh7th/cmp-path" })
 plugin_add({ "hrsh7th/cmp-cmdline" })
 plugin_add({ "hrsh7th/nvim-cmp" })
+
 plugin_add({ "L3MON4D3/LuaSnip" })
 plugin_add({ "saadparwaiz1/cmp_luasnip" })
+
+plugin_add({ "stevearc/oil.nvim" })
+
+plugin_add({ "numToStr/Comment.nvim" })
+plugin_add({ "NvChad/nvim-colorizer.lua" })
+plugin_add({ "RRethy/nvim-align" })
+plugin_add({ "lewis6991/gitsigns.nvim" })
+
 plugin_add({ "Mofiqul/vscode.nvim" })
-plugin_add({ "sainnhe/everforest" })
+plugin_add({ "chama-chomo/grail" })
 
 local opts = {}
 require("lazy").setup(plugins, opts)
@@ -99,15 +105,13 @@ vim.diagnostic.config({
 
 local keymap_set_opts = { noremap = true, silent = true }
 vim.keymap.set("n", '<leader>w', '<C-^>', keymap_set_opts)
-vim.keymap.set("n", "<leader>e", vim.cmd.Explore, keymap_set_opts)
+vim.keymap.set("n", "<leader>e", "<CMD>Oil<CR>", keymap_set_opts)
 vim.keymap.set("n", "<leader>r", vim.cmd.nohl, keymap_set_opts)
 
 -- Stacks setup (for ft specific stuff see after/ftplugin/stacks.lua)
 vim.filetype.add({ extension = { stacks = "stacks" } })
 vim.treesitter.language.register("stacks", "stacks")
-
 local parser_config = require("nvim-treesitter.parsers").get_parser_configs()
-
 parser_config.stacks = {
     install_info                   = {
         url   = "~/fun/stacks/tree-sitter", -- local path or git repo
@@ -118,3 +122,6 @@ parser_config.stacks = {
     generate_requires_npm          = false,    -- if stand-alone parser without npm dependencies
     requires_generate_from_grammar = false,    -- if folder contains pre-generated src/parser.c
 }
+
+vim.filetype.add({ extension = { act = "act" } })
+vim.treesitter.language.register("act", "act")

@@ -66,7 +66,6 @@ plug({ "hrsh7th/cmp-buffer" })
 plug({ "hrsh7th/cmp-path" })
 plug({ "L3MON4D3/LuaSnip" })
 plug({ "saadparwaiz1/cmp_luasnip" })
-plug({ "stevearc/oil.nvim" })
 plug({ "numToStr/Comment.nvim" }, "Sticking to this over builtin as I like my leader-c")
 plug({ "NvChad/nvim-colorizer.lua" }, "Show colors as colors. Wow")
 plug({ "RRethy/nvim-align" }, "Light, handy auto-align by some seperator over range")
@@ -106,7 +105,7 @@ vim.keymap.set("n", "<leader><leader>o", telescope_picker(telescope_builtin.oldf
 vim.keymap.set("n", "<leader><leader>g", telescope_picker(telescope_builtin.live_grep), {})
 vim.keymap.set("n", "<leader><leader>s", telescope_picker(telescope_builtin.grep_string), {})
 vim.keymap.set("n", "<leader><leader>r", telescope_picker(telescope_builtin.resume), {})
--- vim.keymap.set("n", "<leader><leader>b", ivy_picker(telescope_builtin.buffers), {})
+vim.keymap.set("n", "<leader><leader>b", telescope_picker(telescope_builtin.buffers), {})
 
 local cmp = require("cmp")
 local luasnip = require("luasnip")
@@ -135,16 +134,16 @@ require("mason-lspconfig").setup({ ensure_installed = { "lua_ls", "gopls" } })
 local lsp = function(name, config)
     config.capabilities = require("cmp_nvim_lsp").default_capabilities()
     -- "Takeover Mode" Support for volar over tsserver
-    -- if require("neoconf").get(lsp .. ".disable") then return; end
-    -- if lsp == "volar" then
-    --     config.filetypes = {
-    --         "typescript", "javascript", "javascriptreact",
-    --         "typescriptreact", "vue", "json"
-    --     }
-    -- end
-    -- if lsp == "eslint" then
-    --     config.filetypes = { "vue", "typescript", "javascript" }
-    -- end
+    if require("neoconf").get(name .. ".disable") then return; end
+    if name == "volar" then
+        config.filetypes = {
+            "typescript", "javascript", "javascriptreact",
+            "typescriptreact", "vue", "json"
+        }
+    end
+    if name == "eslint" then
+        config.filetypes = { "vue", "typescript", "javascript" }
+    end
     require("lspconfig")[name].setup(config)
 end
 
@@ -183,12 +182,6 @@ vim.api.nvim_create_autocmd("LspAttach", {
         vim.keymap.set("n", "gi", vim.lsp.buf.implementation, opts)
         vim.keymap.set("n", "gl", vim.lsp.buf.definition, opts)
         vim.keymap.set({ "n", "v" }, "<leader>we", function()
-            -- FIXME: this is broken
-            -- local eslint_lsp_active = #vim.lsp.get_active_clients({ name = "eslint_lsp" })
-            -- if eslint_lsp_active ~= 1 then
-            --     vim.api.nvim_command("EslintFixAll")
-            --     return;
-            -- end
             vim.lsp.buf.format({ async = true })
         end, opts)
         vim.keymap.set("n", "<leader><leader>e",
@@ -204,7 +197,6 @@ vim.api.nvim_create_autocmd("LspAttach", {
 require("Comment").setup({ toggler = { line = "<leader>c" }, opleader = { line = "<leader>c" }, })
 require("colorizer").setup({ user_default_options = { names = false } })
 require("gitsigns").setup()
-require("oil").setup()
 
 vim.fn.sign_define("DiagnosticSignInfo", { texthl = "DiagnosticSignInfo", text = "I", numhl = "" })
 vim.fn.sign_define("DiagnosticSignHint", { texthl = "DiagnosticSignHint", text = "H", numhl = "" })
@@ -213,7 +205,7 @@ vim.fn.sign_define("DiagnosticSignError", { texthl = "DiagnosticSignError", text
 vim.diagnostic.config({ virtual_text = false, severity_sort = true, })
 
 vim.keymap.set("n", '<leader>w', '<C-^>', { noremap = true, silent = true })
-vim.keymap.set("n", "<leader>e", "<CMD>Oil<CR>", { noremap = true, silent = true })
+vim.keymap.set("n", "<leader>e", "<CMD>:Explore<CR>", { noremap = true, silent = true })
 vim.keymap.set("n", "<leader>r", vim.cmd.nohl, { noremap = true, silent = true })
 vim.keymap.set("n", "<leader>bl", "<CMD> Gitsigns blame_line<CR>", { noremap = true, silent = true })
 

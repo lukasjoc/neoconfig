@@ -67,10 +67,9 @@ plug({ "hrsh7th/cmp-path" })
 plug({ "L3MON4D3/LuaSnip" })
 plug({ "saadparwaiz1/cmp_luasnip" })
 plug({ "numToStr/Comment.nvim" }, "Sticking to this over builtin as I like my leader-c")
-plug({ "NvChad/nvim-colorizer.lua" }, "Show colors as colors. Wow")
 plug({ "RRethy/nvim-align" }, "Light, handy auto-align by some seperator over range")
 plug({ "lewis6991/gitsigns.nvim" })
-plug({ "NLKNguyen/papercolor-theme" })
+plug({ "akinsho/git-conflict.nvim", version = "2.0.0", config = true })
 plug({ "rose-pine/neovim", name = "rose-pine" })
 require("lazy").setup(spec, {})
 
@@ -200,7 +199,6 @@ vim.api.nvim_create_autocmd("LspAttach", {
 
 ---@diagnostic disable-next-line: missing-fields
 require("Comment").setup({ toggler = { line = "<leader>c" }, opleader = { line = "<leader>c" }, })
-require("colorizer").setup({ user_default_options = { names = false } })
 require("gitsigns").setup()
 
 vim.fn.sign_define("DiagnosticSignInfo", { texthl = "DiagnosticSignInfo", text = "I", numhl = "" })

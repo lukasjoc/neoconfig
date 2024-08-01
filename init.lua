@@ -181,8 +181,8 @@ vim.api.nvim_create_autocmd("LspAttach", {
         vim.keymap.set("n", "gi", vim.lsp.buf.implementation, opts)
         vim.keymap.set("n", "gl", vim.lsp.buf.definition, opts)
         vim.keymap.set({ "n", "v" }, "<leader>we", function()
-	        local eslint_lsp_active = #vim.lsp.get_clients({ name = "eslint_lsp" })
-            if eslint_lsp_active ~= 1 then
+            local eslint_lsp_active = #vim.lsp.get_clients({ name = "eslint" })
+            if eslint_lsp_active > 0 then
                 vim.api.nvim_command("EslintFixAll")
                 return;
             end

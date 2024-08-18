@@ -52,8 +52,8 @@ vim.opt.rtp:prepend(lazypath)
 local spec = {}
 ---@diagnostic disable-next-line: unused-local
 local plug = function(plugin, _doc) table.insert(spec, plugin); end
-plug({ "folke/neodev.nvim", ft = "lua" }, "For a generally better nvim experience")
-plug({ "folke/neoconf.nvim" }, "For a generally better nvim config experience")
+plug({ "folke/neodev.nvim", ft = "lua" })
+plug({ "folke/neoconf.nvim" })
 plug({ "nvim-lua/plenary.nvim" })
 plug({ "nvim-telescope/telescope.nvim", tag = "0.1.7" })
 plug({ "nvim-treesitter/nvim-treesitter", build = ":TSUpdate" })
@@ -69,11 +69,44 @@ plug({ "saadparwaiz1/cmp_luasnip" })
 plug({ "numToStr/Comment.nvim" }, "Sticking to this over builtin as I like my leader-c")
 plug({ "RRethy/nvim-align" }, "Light, handy auto-align by some seperator over range")
 plug({ "lewis6991/gitsigns.nvim" })
-plug({ "akinsho/git-conflict.nvim", version = "2.0.0", config = true })
-plug({ "rose-pine/neovim", name = "rose-pine" })
+plug({ "akinsho/git-conflict.nvim", version = "2.0.0", config = true }, "Conflict Markers UI")
+plug({ "rose-pine/neovim", name = "rose-pine" }, "Good but dark")
+plug({ "miikanissi/modus-themes.nvim" })
 require("lazy").setup(spec, {})
 
-require("rose-pine").setup({}); vim.cmd("colorscheme rose-pine")
+vim.o.background = "light"
+require("modus-themes").setup({
+    variant = "default", -- Theme comes in four variants `default`, `tinted`, `deuteranopia`, and `tritanopia`
+    styles = {
+        -- Style to be applied to different syntax groups
+        -- Value is any valid attr-list value for `:help nvim_set_hl`
+        comments = { italic = true, bold = false },
+        keywords = { italic = true, bold = true },
+    },
+
+    --- You can override specific color groups to use other groups or a hex color
+    --- Function will be called with a ColorScheme table
+    --- Refer to `extras/lua/modus_operandi.lua` or `extras/lua/modus_vivendi.lua` for the ColorScheme table
+    ---@param colors ColorScheme
+    on_colors = function(colors) end,
+
+    --- You can override specific highlights to use other groups or a hex color
+    --- Function will be called with a Highlights and ColorScheme table
+    --- Refer to `extras/lua/modus_operandi.lua` or `extras/lua/modus_vivendi.lua` for the Highlights and ColorScheme table
+    ---@param highlights Highlights
+    ---@param colors ColorScheme
+    on_highlights = function(highlights, colors)
+        -- TODO: Recommend better GitSigns Support upstream?
+        highlights.GitSignsAdd = { fg = colors.green_intense, bg = 'NONE' }
+        highlights.GitSignsChange = { fg = colors.yellow_intense, bg = 'NONE' }
+        highlights.GitSignsDelete = { fg = colors.red_intense, bg = 'NONE' }
+        highlights.GitSignsAddLn = { fg = colors.bg_main, bg = colors.green_intense }
+        highlights.GitSignsChangeLn = { fg = colors.bg_main, bg = colors.yellow_intense }
+        highlights.GitSignsDeleteLn = { fg = colors.bg_main, bg = colors.red_intense }
+    end,
+})
+vim.cmd("colorscheme modus")
+
 require("neoconf").setup()
 require("neodev").setup()
 
@@ -84,7 +117,7 @@ require("nvim-treesitter.configs").setup({
     },
     sync_install = true,
     auto_install = false,
-    ignore_install = { "java", "tsx", "fish", "erlang" },
+    ignore_install = { "java", "tsx", "fish" },
     highlight = { enable = true, additional_vim_regex_highlighting = false },
     indent = { enable = true },
 })
@@ -94,7 +127,7 @@ local telescope_picker = function(cmd)
     local ivy = require("telescope.themes").get_ivy({
         border = false,
         shorten_path = true,
-        layout_config = { height = 35 }
+        layout_config = { height = 60 }
     })
     return function() cmd(ivy) end
 end
@@ -113,8 +146,8 @@ cmp.setup({
         expand = function(args) luasnip.lsp_expand(args.body) end,
     },
     mapping = cmp.mapping.preset.insert({
-        ['<C-b>'] = cmp.mapping.scroll_docs(-2),
-        ['<C-f>'] = cmp.mapping.scroll_docs(2),
+        -- ['<C-b>'] = cmp.mapping.scroll_docs(-2),
+        -- ['<C-f>'] = cmp.mapping.scroll_docs(2),
         ['<C-Space>'] = cmp.mapping.complete(),
         ['<C-e>'] = cmp.mapping.abort(),
         ['<C-w>'] = cmp.mapping.confirm({ select = false }),
@@ -212,25 +245,6 @@ vim.keymap.set("n", "<leader>e", "<CMD>:Explore<CR>", { noremap = true, silent =
 vim.keymap.set("n", "<leader>r", vim.cmd.nohl, { noremap = true, silent = true })
 vim.keymap.set("n", "<leader>bl", "<CMD> Gitsigns blame_line<CR>", { noremap = true, silent = true })
 
--- NOTE!!: Custom Languages Section (for ft specific stuff see ftplugin/[name].lua)
--- local parsers = require("nvim-treesitter.parsers").get_parser_configs()
--- local register_ft = function(name)
---     vim.filetype.add({ extension = { act = name } })
---     vim.treesitter.language.register(name, name)
--- end
--- register_ft("stacks")
-
----@class stacks
--- s.stacks = {
---     install_info                   = {
---         url   = "~/fun/stacks/tree-sitter", -- local path or git repo
---         files = { "src/parser.c" },
---     },
---     filetype                       = "stacks", -- if filetype does not match the parser name
---     branch                         = "main",
---     generate_requires_npm          = false,    -- if stand-alone parser without npm dependencies
---     requires_generate_from_grammar = false,    -- if folder contains pre-generated src/parser.c
--- }
--- register_ft("act")
+vim.filetype.add({ extension = { tsm = "tsm" } })
 
 print("We're vimming.. Have a nice day hacking! (@<@)")

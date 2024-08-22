@@ -55,7 +55,7 @@ local plug = function(plugin, _doc) table.insert(spec, plugin); end
 plug({ "folke/neodev.nvim", ft = "lua" })
 plug({ "folke/neoconf.nvim" })
 plug({ "nvim-lua/plenary.nvim" })
-plug({ "nvim-telescope/telescope.nvim", tag = "0.1.7" })
+plug({ "nvim-telescope/telescope.nvim", tag = "0.1.8" })
 plug({ "nvim-treesitter/nvim-treesitter", build = ":TSUpdate" })
 plug({ "williamboman/mason.nvim" })
 plug({ "williamboman/mason-lspconfig.nvim" })
@@ -122,6 +122,24 @@ require("nvim-treesitter.configs").setup({
     indent = { enable = true },
 })
 
+local telescope = require("telescope")
+telescope.setup({
+    pickers = {
+        find_files = {
+            hidden = true,
+            find_command = {
+                "rg",
+                "--ignore",
+                "--files",
+                "--hidden",
+                "--glob=!**/.git/*",
+                "--glob=!**/build/*",
+                "--glob=!**/dist/*",
+                "--glob=!**/node_modules/*",
+            },
+        }
+    },
+})
 local telescope_builtin = require("telescope.builtin")
 local telescope_picker = function(cmd)
     local ivy = require("telescope.themes").get_ivy({

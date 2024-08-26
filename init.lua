@@ -133,7 +133,6 @@ telescope.setup({
                 "--files",
                 "--hidden",
                 "--glob=!**/.git/*",
-                "--glob=!**/build/*",
                 "--glob=!**/dist/*",
                 "--glob=!**/node_modules/*",
             },

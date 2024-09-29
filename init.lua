@@ -61,51 +61,17 @@ plug({ "williamboman/mason.nvim" })
 plug({ "williamboman/mason-lspconfig.nvim" })
 plug({ "neovim/nvim-lspconfig" })
 plug({ "hrsh7th/nvim-cmp" })
-plug({ "hrsh7th/cmp-nvim-lsp" })
+-- plug({ "hrsh7th/cmp-nvim-lsp" })
 plug({ "hrsh7th/cmp-buffer" })
 plug({ "hrsh7th/cmp-path" })
 plug({ "L3MON4D3/LuaSnip" })
-plug({ "saadparwaiz1/cmp_luasnip" })
+-- plug({ "saadparwaiz1/cmp_luasnip" })
 plug({ "numToStr/Comment.nvim" }, "Sticking to this over builtin as I like my leader-c")
 plug({ "RRethy/nvim-align" }, "Light, handy auto-align by some seperator over range")
 plug({ "lewis6991/gitsigns.nvim" })
 plug({ "akinsho/git-conflict.nvim", version = "2.0.0", config = true }, "Conflict Markers UI")
-plug({ "rose-pine/neovim", name = "rose-pine" }, "Good but dark")
-plug({ "miikanissi/modus-themes.nvim" })
+-- plug({"Mofiqul/vscode.nvim"})
 require("lazy").setup(spec, {})
-
-vim.o.background = "light"
-require("modus-themes").setup({
-    variant = "default", -- Theme comes in four variants `default`, `tinted`, `deuteranopia`, and `tritanopia`
-    styles = {
-        -- Style to be applied to different syntax groups
-        -- Value is any valid attr-list value for `:help nvim_set_hl`
-        comments = { italic = true, bold = false },
-        keywords = { italic = true, bold = true },
-    },
-
-    --- You can override specific color groups to use other groups or a hex color
-    --- Function will be called with a ColorScheme table
-    --- Refer to `extras/lua/modus_operandi.lua` or `extras/lua/modus_vivendi.lua` for the ColorScheme table
-    ---@param colors ColorScheme
-    on_colors = function(colors) end,
-
-    --- You can override specific highlights to use other groups or a hex color
-    --- Function will be called with a Highlights and ColorScheme table
-    --- Refer to `extras/lua/modus_operandi.lua` or `extras/lua/modus_vivendi.lua` for the Highlights and ColorScheme table
-    ---@param highlights Highlights
-    ---@param colors ColorScheme
-    on_highlights = function(highlights, colors)
-        -- TODO: Recommend better GitSigns Support upstream?
-        highlights.GitSignsAdd = { fg = colors.green_intense, bg = 'NONE' }
-        highlights.GitSignsChange = { fg = colors.yellow_intense, bg = 'NONE' }
-        highlights.GitSignsDelete = { fg = colors.red_intense, bg = 'NONE' }
-        highlights.GitSignsAddLn = { fg = colors.bg_main, bg = colors.green_intense }
-        highlights.GitSignsChangeLn = { fg = colors.bg_main, bg = colors.yellow_intense }
-        highlights.GitSignsDeleteLn = { fg = colors.bg_main, bg = colors.red_intense }
-    end,
-})
-vim.cmd("colorscheme modus")
 
 require("neoconf").setup()
 require("neodev").setup()
@@ -157,11 +123,11 @@ vim.keymap.set("n", "<leader><leader>r", telescope_picker(telescope_builtin.resu
 vim.keymap.set("n", "<leader><leader>b", telescope_picker(telescope_builtin.buffers), {})
 
 local cmp = require("cmp")
-local luasnip = require("luasnip")
+-- local luasnip = require("luasnip")
 cmp.setup({
-    snippet = {
-        expand = function(args) luasnip.lsp_expand(args.body) end,
-    },
+    -- snippet = {
+    --     expand = function(args) luasnip.lsp_expand(args.body) end,
+    -- },
     mapping = cmp.mapping.preset.insert({
         -- ['<C-b>'] = cmp.mapping.scroll_docs(-2),
         -- ['<C-f>'] = cmp.mapping.scroll_docs(2),
@@ -170,8 +136,8 @@ cmp.setup({
         ['<C-w>'] = cmp.mapping.confirm({ select = false }),
     }),
     sources = cmp.config.sources({
-        { name = 'nvim_lsp' },
-        { name = 'luasnip' },
+        -- { name = 'nvim_lsp' },
+        -- { name = 'luasnip' },
     }, {
         { name = 'buffer' },
     })
@@ -181,8 +147,8 @@ require("mason").setup()
 require("mason-lspconfig").setup({ ensure_installed = { "lua_ls", "gopls" } })
 
 local lsp = function(name, config)
-    config.capabilities = require("cmp_nvim_lsp").default_capabilities()
-    -- "Takeover Mode" Support for volar over tsserver
+    -- config.capabilities = require("cmp_nvim_lsp").default_capabilities()
+    -- "Takeover Mode" Support for volar over ts_ls
     if require("neoconf").get(name .. ".disable") then return; end
     if name == "volar" then
         config.filetypes = {
@@ -191,7 +157,38 @@ local lsp = function(name, config)
         }
     end
     if name == "eslint" then
-        config.filetypes = { "vue", "typescript", "javascript" }
+        config.filetypes = {
+            "javascript",
+            "typescript",
+            "vue",
+            "astro",
+            "svelte",
+            "html",
+            "markdown",
+            "json",
+            "jsonc",
+            "yaml",
+            "toml",
+            "xml",
+            "css",
+            "less",
+            "scss",
+            "pcss",
+            "postcss"
+        }
+        config.settings = {}
+        config.settings.rulesCustomizations = {
+            { rule = 'style/*',   severity = 'off', fixable = true },
+            { rule = 'format/*',  severity = 'off', fixable = true },
+            { rule = '*-indent',  severity = 'off', fixable = true },
+            { rule = '*-spacing', severity = 'off', fixable = true },
+            { rule = '*-spaces',  severity = 'off', fixable = true },
+            { rule = '*-order',   severity = 'off', fixable = true },
+            { rule = '*-dangle',  severity = 'off', fixable = true },
+            { rule = '*-newline', severity = 'off', fixable = true },
+            { rule = '*quotes',   severity = 'off', fixable = true },
+            { rule = '*semi',     severity = 'off', fixable = true },
+        }
     end
     require("lspconfig")[name].setup(config)
 end
@@ -249,8 +246,13 @@ vim.api.nvim_create_autocmd("LspAttach", {
 
 ---@diagnostic disable-next-line: missing-fields
 require("Comment").setup({ toggler = { line = "<leader>c" }, opleader = { line = "<leader>c" }, })
-require("gitsigns").setup()
+require("gitsigns").setup();
 
+local gitsigns_show_blame_info = function()
+    require("gitsigns").blame_line({ full = true, ignore_whitespace = true })
+end
+
+vim.keymap.set("n", "<leader>bl", gitsigns_show_blame_info, { noremap = true, silent = true })
 vim.fn.sign_define("DiagnosticSignInfo", { texthl = "DiagnosticSignInfo", text = "I", numhl = "" })
 vim.fn.sign_define("DiagnosticSignHint", { texthl = "DiagnosticSignHint", text = "H", numhl = "" })
 vim.fn.sign_define("DiagnosticSignWarn", { texthl = "DiagnosticSignWarn", text = "W", numhl = "" })
@@ -260,7 +262,6 @@ vim.diagnostic.config({ virtual_text = false, severity_sort = true, })
 vim.keymap.set("n", '<leader>w', '<C-^>', { noremap = true, silent = true })
 vim.keymap.set("n", "<leader>e", "<CMD>:Explore<CR>", { noremap = true, silent = true })
 vim.keymap.set("n", "<leader>r", vim.cmd.nohl, { noremap = true, silent = true })
-vim.keymap.set("n", "<leader>bl", "<CMD> Gitsigns blame_line<CR>", { noremap = true, silent = true })
 
 vim.filetype.add({ extension = { tsm = "tsm" } })
 

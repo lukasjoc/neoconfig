@@ -35,6 +35,10 @@ vim.api.nvim_create_autocmd("BufEnter", {
     end,
 })
 
+-- Theme
+vim.cmd("colorscheme lunaperche")
+
+-- Lazy (TODO: Try to reduce dependencies)
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
     vim.fn.system({
@@ -61,16 +65,13 @@ plug({ "williamboman/mason.nvim" })
 plug({ "williamboman/mason-lspconfig.nvim" })
 plug({ "neovim/nvim-lspconfig" })
 plug({ "hrsh7th/nvim-cmp" })
--- plug({ "hrsh7th/cmp-nvim-lsp" })
 plug({ "hrsh7th/cmp-buffer" })
 plug({ "hrsh7th/cmp-path" })
 plug({ "L3MON4D3/LuaSnip" })
--- plug({ "saadparwaiz1/cmp_luasnip" })
 plug({ "numToStr/Comment.nvim" }, "Sticking to this over builtin as I like my leader-c")
 plug({ "RRethy/nvim-align" }, "Light, handy auto-align by some seperator over range")
 plug({ "lewis6991/gitsigns.nvim" })
 plug({ "akinsho/git-conflict.nvim", version = "2.0.0", config = true }, "Conflict Markers UI")
--- plug({"Mofiqul/vscode.nvim"})
 require("lazy").setup(spec, {})
 
 require("neoconf").setup()
@@ -100,6 +101,7 @@ telescope.setup({
                 "--hidden",
                 "--glob=!**/.git/*",
                 "--glob=!**/dist/*",
+                "--glob=!**/target/*",
                 "--glob=!**/node_modules/*",
             },
         }
@@ -123,31 +125,18 @@ vim.keymap.set("n", "<leader><leader>r", telescope_picker(telescope_builtin.resu
 vim.keymap.set("n", "<leader><leader>b", telescope_picker(telescope_builtin.buffers), {})
 
 local cmp = require("cmp")
--- local luasnip = require("luasnip")
 cmp.setup({
-    -- snippet = {
-    --     expand = function(args) luasnip.lsp_expand(args.body) end,
-    -- },
     mapping = cmp.mapping.preset.insert({
-        -- ['<C-b>'] = cmp.mapping.scroll_docs(-2),
-        -- ['<C-f>'] = cmp.mapping.scroll_docs(2),
-        ['<C-Space>'] = cmp.mapping.complete(),
         ['<C-e>'] = cmp.mapping.abort(),
         ['<C-w>'] = cmp.mapping.confirm({ select = false }),
     }),
-    sources = cmp.config.sources({
-        -- { name = 'nvim_lsp' },
-        -- { name = 'luasnip' },
-    }, {
-        { name = 'buffer' },
-    })
+    sources = cmp.config.sources({}, { { name = 'buffer' } })
 })
 
 require("mason").setup()
 require("mason-lspconfig").setup({ ensure_installed = { "lua_ls", "gopls" } })
 
 local lsp = function(name, config)
-    -- config.capabilities = require("cmp_nvim_lsp").default_capabilities()
     -- "Takeover Mode" Support for volar over ts_ls
     if require("neoconf").get(name .. ".disable") then return; end
     if name == "volar" then

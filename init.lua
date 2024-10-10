@@ -35,9 +35,6 @@ vim.api.nvim_create_autocmd("BufEnter", {
     end,
 })
 
--- Theme
-vim.cmd("colorscheme lunaperche")
-
 -- Lazy (TODO: Try to reduce dependencies)
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
@@ -72,6 +69,63 @@ plug({ "numToStr/Comment.nvim" }, "Sticking to this over builtin as I like my le
 plug({ "RRethy/nvim-align" }, "Light, handy auto-align by some seperator over range")
 plug({ "lewis6991/gitsigns.nvim" })
 plug({ "akinsho/git-conflict.nvim", version = "2.0.0", config = true }, "Conflict Markers UI")
+plug({
+    "maxmx03/solarized.nvim",
+    lazy = false,
+    priority = 1000,
+    config = function(_, opts)
+        opts.variant = "spring"
+        opts.on_highlights = function(colors, color)
+            local shade = color.shade
+            local darken = color.darken
+            ---@type solarized.highlights
+            local groups = {
+                NormalFloat = { bg = colors.base02 },
+                WildMenu = { bg = colors.base02 },
+                PMenu = { bg = colors.base02 },
+                Comment = { bold = true, italic = true },
+            }
+
+            return groups
+        end
+        opts.plugins = {
+            treesitter        = true,
+            lspconfig         = true,
+            navic             = false,
+            cmp               = true,
+            indentblankline   = false,
+            neotree           = false,
+            nvimtree          = false,
+            whichkey          = false,
+            dashboard         = false,
+            gitsigns          = true,
+            telescope         = true,
+            noice             = false,
+            hop               = false,
+            ministatusline    = false,
+            minitabline       = false,
+            ministarter       = false,
+            minicursorword    = false,
+            notify            = false,
+            rainbowdelimiters = false,
+            bufferline        = false,
+            lazy              = true,
+            rendermarkdown    = false,
+            ale               = false,
+            coc               = false,
+            leap              = false,
+            alpha             = false,
+            yanky             = false,
+            gitgutter         = false,
+            mason             = true,
+            flash             = false,
+        }
+        vim.o.termguicolors = true
+        vim.o.background = "dark"
+        require("solarized").setup(opts)
+        vim.cmd.colorscheme("solarized")
+    end,
+})
 require("lazy").setup(spec, {})
 
 require("neoconf").setup()
@@ -253,5 +307,6 @@ vim.keymap.set("n", "<leader>e", "<CMD>:Explore<CR>", { noremap = true, silent =
 vim.keymap.set("n", "<leader>r", vim.cmd.nohl, { noremap = true, silent = true })
 
 vim.filetype.add({ extension = { tsm = "tsm" } })
+vim.filetype.add({ extension = { act = "act" } })
 
 print("We're vimming.. Have a nice day hacking! (@<@)")

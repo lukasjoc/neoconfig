@@ -47,14 +47,12 @@ if not vim.loop.fs_stat(lazypath) then
         lazypath,
     })
 end
----@diagnostic disable-next-line: undefined-field
+
 vim.opt.rtp:prepend(lazypath)
 
 local spec = {}
----@diagnostic disable-next-line: unused-local
 local plug = function(plugin, _doc) table.insert(spec, plugin); end
 plug({ "folke/neodev.nvim", ft = "lua" })
-plug({ "folke/neoconf.nvim" })
 plug({ "nvim-lua/plenary.nvim" })
 plug({ "nvim-telescope/telescope.nvim", tag = "0.1.8" })
 plug({ "nvim-treesitter/nvim-treesitter", build = ":TSUpdate" })
@@ -62,79 +60,41 @@ plug({ "williamboman/mason.nvim" })
 plug({ "williamboman/mason-lspconfig.nvim" })
 plug({ "neovim/nvim-lspconfig" })
 plug({ "hrsh7th/nvim-cmp" })
+plug({ "hrsh7th/cmp-nvim-lsp" })
 plug({ "hrsh7th/cmp-buffer" })
 plug({ "hrsh7th/cmp-path" })
 plug({ "L3MON4D3/LuaSnip" })
+plug({ "saadparwaiz1/cmp_luasnip" })
 plug({ "numToStr/Comment.nvim" }, "Sticking to this over builtin as I like my leader-c")
-plug({ "RRethy/nvim-align" }, "Light, handy auto-align by some seperator over range")
+plug({ "RRethy/nvim-align" }, "Light, handy auto-align by some separator over range")
 plug({ "lewis6991/gitsigns.nvim" })
-plug({ "akinsho/git-conflict.nvim", version = "2.0.0", config = true }, "Conflict Markers UI")
-plug({
-    "maxmx03/solarized.nvim",
-    lazy = false,
-    priority = 1000,
-    config = function(_, opts)
-        opts.variant = "spring"
-        opts.on_highlights = function(colors, color)
-            local shade = color.shade
-            local darken = color.darken
-            ---@type solarized.highlights
-            local groups = {
-                NormalFloat = { bg = colors.base02 },
-                WildMenu = { bg = colors.base02 },
-                PMenu = { bg = colors.base02 },
-                Comment = { bold = true, italic = true },
-            }
+plug({ "akinsho/git-conflict.nvim", version = "2.1.0", config = true }, "Conflict Markers UI")
+plug({ "folke/tokyonight.nvim", lazy = false, priority = 1000, opts = {} })
 
-            return groups
-        end
-        opts.plugins = {
-            treesitter        = true,
-            lspconfig         = true,
-            navic             = false,
-            cmp               = true,
-            indentblankline   = false,
-            neotree           = false,
-            nvimtree          = false,
-            whichkey          = false,
-            dashboard         = false,
-            gitsigns          = true,
-            telescope         = true,
-            noice             = false,
-            hop               = false,
-            ministatusline    = false,
-            minitabline       = false,
-            ministarter       = false,
-            minicursorword    = false,
-            notify            = false,
-            rainbowdelimiters = false,
-            bufferline        = false,
-            lazy              = true,
-            rendermarkdown    = false,
-            ale               = false,
-            coc               = false,
-            leap              = false,
-            alpha             = false,
-            yanky             = false,
-            gitgutter         = false,
-            mason             = true,
-            flash             = false,
-        }
-        vim.o.termguicolors = true
-        vim.o.background = "dark"
-        require("solarized").setup(opts)
-        vim.cmd.colorscheme("solarized")
-    end,
-})
 require("lazy").setup(spec, {})
 
-require("neoconf").setup()
+require("tokyonight").setup({
+    style = "night",
+    styles = {
+        comments = { italic = true, bold = true },
+    },
+    --- You can override specific highlights to use other groups or a hex color
+    --- function will be called with a Highlights and ColorScheme table
+    ---@param highlights tokyonight.Highlights
+    ---@param colors ColorScheme
+    on_highlights = function(highlights, colors)
+        highlights.Comment = { fg = colors.warning }
+    end,
+})
+
+vim.cmd.colorscheme("tokyonight")
+
 require("neodev").setup()
 
----@diagnostic disable-next-line: missing-fields
 require("nvim-treesitter.configs").setup({
     ensure_installed = {
-        "vim", "lua", "comment", "c", "bash", "vimdoc", "go", "typescript",
+        "vim", "lua", "comment", "c", "bash", "vimdoc", "rust",
+        "javascript", "html", "css", "go", "typescript",
     },
     sync_install = true,
     auto_install = false,
@@ -170,6 +130,7 @@ local telescope_picker = function(cmd)
     })
     return function() cmd(ivy) end
 end
+
 vim.keymap.set("n", "<leader><leader>f", telescope_picker(telescope_builtin.find_files), {})
 vim.keymap.set("n", "<leader><leader>l", telescope_picker(telescope_builtin.current_buffer_fuzzy_find), {})
 vim.keymap.set("n", "<leader><leader>o", telescope_picker(telescope_builtin.oldfiles), {})
@@ -179,45 +140,36 @@ vim.keymap.set("n", "<leader><leader>r", telescope_picker(telescope_builtin.resu
 vim.keymap.set("n", "<leader><leader>b", telescope_picker(telescope_builtin.buffers), {})
 
 local cmp = require("cmp")
+local luasnip = require("luasnip")
 cmp.setup({
+    snippet = {
+        expand = function(args) luasnip.lsp_expand(args.body) end,
+    },
     mapping = cmp.mapping.preset.insert({
+        ['<C-Space>'] = cmp.mapping.complete(),
         ['<C-e>'] = cmp.mapping.abort(),
         ['<C-w>'] = cmp.mapping.confirm({ select = false }),
     }),
-    sources = cmp.config.sources({}, { { name = 'buffer' } })
+    sources = cmp.config.sources({
+        { name = 'nvim_lsp' },
+        { name = 'luasnip' },
+    }, {
+        { name = 'buffer' },
+    })
 })
 
 require("mason").setup()
-require("mason-lspconfig").setup({ ensure_installed = { "lua_ls", "gopls" } })
+require("mason-lspconfig").setup({
+    ensure_installed = { "lua_ls", "gopls", "rust_analyzer" },
+})
 
 local lsp = function(name, config)
-    -- "Takeover Mode" Support for volar over ts_ls
-    if require("neoconf").get(name .. ".disable") then return; end
-    if name == "volar" then
-        config.filetypes = {
-            "typescript", "javascript", "javascriptreact",
-            "typescriptreact", "vue", "json"
-        }
-    end
+    config.capabilities = require("cmp_nvim_lsp").default_capabilities()
     if name == "eslint" then
         config.filetypes = {
-            "javascript",
-            "typescript",
-            "vue",
-            "astro",
-            "svelte",
-            "html",
-            "markdown",
-            "json",
-            "jsonc",
-            "yaml",
-            "toml",
-            "xml",
-            "css",
-            "less",
-            "scss",
-            "pcss",
-            "postcss"
+            "javascript", "typescript", "vue", "astro", "svelte", "html",
+            "markdown", "json", "jsonc", "yaml", "toml", "xml", "css", "less",
+            "scss", "pcss", "postcss"
         }
         config.settings = {}
         config.settings.rulesCustomizations = {
@@ -278,17 +230,17 @@ vim.api.nvim_create_autocmd("LspAttach", {
             end
             vim.lsp.buf.format({ async = true })
         end, opts)
-        vim.keymap.set("n", "<leader><leader>e",
-            telescope_picker(telescope_builtin.diagnostics),
+        vim.keymap.set("n", "<leader><leader>e", telescope_picker(telescope_builtin.diagnostics),
             { unpack(opts), buffer = 0 })
-        vim.keymap.set("n", "U",
-            telescope_picker(telescope_builtin.lsp_references),
-            { unpack(opts), buffer = 0 })
+        vim.keymap.set("n", "U", telescope_picker(telescope_builtin.lsp_references), { unpack(opts), buffer = 0 })
     end
 })
 
----@diagnostic disable-next-line: missing-fields
-require("Comment").setup({ toggler = { line = "<leader>c" }, opleader = { line = "<leader>c" }, })
+require("Comment").setup({
+    toggler = { line = "<leader>c" },
+    opleader = { line = "<leader>c" },
+})
+
 require("gitsigns").setup();
 
 local gitsigns_show_blame_info = function()
@@ -306,7 +258,9 @@ vim.keymap.set("n", '<leader>w', '<C-^>', { noremap = true, silent = true })
 vim.keymap.set("n", "<leader>e", "<CMD>:Explore<CR>", { noremap = true, silent = true })
 vim.keymap.set("n", "<leader>r", vim.cmd.nohl, { noremap = true, silent = true })
 
-vim.filetype.add({ extension = { tsm = "tsm" } })
+-- Setup for custom text formats and languages..
+vim.filetype.add({ extension = { tsm = "tsm" } }) -- tiny IR format
+vim.filetype.add({ extension = { tm = "tm" } })   -- tiny source format
 vim.filetype.add({ extension = { act = "act" } })
 
 print("We're vimming.. Have a nice day hacking! (@<@)")

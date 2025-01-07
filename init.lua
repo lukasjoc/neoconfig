@@ -165,26 +165,26 @@ require("mason-lspconfig").setup({
 
 local lsp = function(name, config)
     config.capabilities = require("cmp_nvim_lsp").default_capabilities()
+    if name == "volar" then
+        config.filetypes = { "vue" }
+    end
     if name == "eslint" then
-        config.filetypes = {
-            "javascript", "typescript", "vue", "astro", "svelte", "html",
-            "markdown", "json", "jsonc", "yaml", "toml", "xml", "css", "less",
-            "scss", "pcss", "postcss"
-        }
-        config.settings = {}
-        config.settings.rulesCustomizations = {
-            { rule = 'style/*',   severity = 'off', fixable = true },
-            { rule = 'format/*',  severity = 'off', fixable = true },
-            { rule = '*-indent',  severity = 'off', fixable = true },
-            { rule = '*-spacing', severity = 'off', fixable = true },
-            { rule = '*-spaces',  severity = 'off', fixable = true },
-            { rule = '*-order',   severity = 'off', fixable = true },
-            { rule = '*-dangle',  severity = 'off', fixable = true },
-            { rule = '*-newline', severity = 'off', fixable = true },
-            { rule = '*quotes',   severity = 'off', fixable = true },
-            { rule = '*semi',     severity = 'off', fixable = true },
+        config.filetypes = { "vue", "typescript", "javascript" }
+    end
+    if name == "ts_ls" then
+        config.filetypes = { "javascript", "typescript", "vue", "typescriptreact" }
+        config.init_options = {
+            plugins = {
+                {
+                    name = "@vue/typescript-plugin",
+                    location =
+                    "/home/lukasjoc/.config/nvm/versions/node/v20.18.0/lib/node_modules/@vue/typescript-plugin",
+                    languages = { "javascript", "typescript", "vue" },
+                },
+            },
         }
     end
+
     require("lspconfig")[name].setup(config)
 end
 

@@ -1,6 +1,8 @@
 {
     "diagnostics.disable": [
         "missing-fields",
-        "unused-local"
+        "unused-local",
+        "duplicate-set-field",
+        "redefined-local"
     ]
 }

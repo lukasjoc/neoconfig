@@ -160,56 +160,81 @@ cmp.setup({
 
 require("mason").setup()
 require("mason-lspconfig").setup({
-    ensure_installed = { "lua_ls", "gopls", "rust_analyzer" },
+    ensure_installed = { "lua_ls", "gopls", "clangd", "rust_analyzer" },
 })
 
-local lsp = function(name, config)
+local setup_with_defaults = function(name, config)
+    local config = config or {}
     config.capabilities = require("cmp_nvim_lsp").default_capabilities()
-    if name == "volar" then
-        config.filetypes = { "vue" }
-    end
-    if name == "eslint" then
-        config.filetypes = { "vue", "typescript", "javascript" }
-    end
-    if name == "ts_ls" then
-        config.filetypes = { "javascript", "typescript", "vue", "typescriptreact" }
-        config.init_options = {
+    require("lspconfig")[name].setup(config)
+end
+
+local setup_clangd        = function()
+    local config = {
+        cmd = { "clangd", "--background-index" },
+        filetypes = { "c" },
+    }
+    setup_with_defaults("clangd", config)
+end
+
+local setup_eslint        = function()
+    local config = {
+        filetypes = { "vue", "typescript", "javascript" }
+    };
+    setup_with_defaults("eslint", config)
+end
+
+local setup_volar         = function()
+    local config = {
+        filetypes = { "vue" }
+    }
+    setup_with_defaults("volar", config)
+end
+
+local setup_tsls          = function()
+    local nvm_current_node = require("os").getenv("NVM_BIN"):match("(.*)/")
+    local node_modules = nvm_current_node .. "/lib/node_modules/"
+    local config = {
+        filetypes = { "javascript", "typescript", "vue", "typescriptreact" },
+        init_options = {
             plugins = {
                 {
                     name = "@vue/typescript-plugin",
-                    location =
-                    "/home/lukasjoc/.config/nvm/versions/node/v20.18.0/lib/node_modules/@vue/typescript-plugin",
+                    location = node_modules .. "@vue/typescript-plugin",
                     languages = { "javascript", "typescript", "vue" },
                 },
             },
         }
-    end
-
-    require("lspconfig")[name].setup(config)
+    }
+    setup_with_defaults("ts_ls", config)
 end
 
-local default_handler_func = function(name)
-    local config = {}
-    lsp(name, config)
-end
-
-local handlers = { default_handler_func }
-table.insert(handlers, {
-    ["lua_ls"] = function()
-        lsp("lua_ls", {
-            filetypes = { "lua" },
-            single_file_support = true,
-            settings = {
-                Lua = {
-                    workspace = { checkThirdParty = false },
-                    telemetry = { enable = false },
-                    completion = { callSnippet = "Replace" }
-                }
+local setup_luals         = function()
+    local config = {
+        format = {
+            enable = true,
+        },
+        filetypes = { "lua" },
+        single_file_support = true,
+        settings = {
+            Lua = {
+                workspace = { checkThirdParty = false },
+                telemetry = { enable = false },
+                completion = { callSnippet = "Replace" }
             }
-        })
-    end
+        }
+    }
+    setup_with_defaults("lua_ls", config)
+end
+
+require("mason-lspconfig").setup_handlers({
+    ["lua_ls"] = setup_luals,
+    ["clangd"] = setup_clangd,
+    ["volar"] = setup_volar,
+    ["ts_ls"] = setup_tsls,
+    ["eslint"] = setup_eslint,
+    setup_with_defaults,
 })
-require("mason-lspconfig").setup_handlers(handlers)
 
 vim.api.nvim_create_autocmd("LspAttach", {
     group = vim.api.nvim_create_augroup("UserLspConfig", {}),

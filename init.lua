@@ -72,12 +72,13 @@ plug({ "lewis6991/gitsigns.nvim" })
 plug({ "akinsho/git-conflict.nvim", version = "2.1.0", config = true }, "Conflict Markers UI")
 plug({ "folke/tokyonight.nvim", lazy = false, priority = 1000, opts = {} })
 plug({
+    "lukasjoc/vibr.nvim",
     lazy = false,
     priority = 1000,
     opts = {},
-    dir = "~/fun/vibr.nvim", -- Path to your local plugin
-    name = "vibr.nvim",      -- Optional: plugin name
-    dev = true,         -- Optional: Marks it as a dev plugin
+    -- dir = "~/fun/vibr.nvim", -- Path to your local plugin
+    -- name = "vibr.nvim",      -- Optional: plugin name
+    -- dev = true,         -- Optional: Marks it as a dev plugin
 })
 
 require("lazy").setup(spec, {})

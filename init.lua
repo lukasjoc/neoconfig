@@ -23,6 +23,7 @@ vim.o.updatetime = 250
 vim.o.timeout = true
 vim.o.timeoutlen = 300
 vim.opt.listchars = { tab = '  ', trail = '·' }
+vim.opt.fillchars = "eob: "
 vim.g.netrw_banner = 0
 vim.g.netrw_fastbrowse = 1
 vim.g.netrw_liststyle = 1
@@ -70,24 +71,33 @@ plug({ "RRethy/nvim-align" }, "Light, handy auto-align by some separator over ra
 plug({ "lewis6991/gitsigns.nvim" })
 plug({ "akinsho/git-conflict.nvim", version = "2.1.0", config = true }, "Conflict Markers UI")
 plug({ "folke/tokyonight.nvim", lazy = false, priority = 1000, opts = {} })
+plug({
+    lazy = false,
+    priority = 1000,
+    opts = {},
+    dir = "~/fun/vibr.nvim", -- Path to your local plugin
+    name = "vibr.nvim",      -- Optional: plugin name
+    dev = true,         -- Optional: Marks it as a dev plugin
+})
 
 require("lazy").setup(spec, {})
 
-require("tokyonight").setup({
-    style = "night",
-    styles = {
-        comments = { italic = true, bold = true },
-    },
-    --- You can override specific highlights to use other groups or a hex color
-    --- function will be called with a Highlights and ColorScheme table
-    ---@param highlights tokyonight.Highlights
-    ---@param colors ColorScheme
-    on_highlights = function(highlights, colors)
-        highlights.Comment = { fg = colors.warning }
-    end,
-})
+-- require("tokyonight").setup({
+--     style = "night",
+--     styles = {
+--         comments = { italic = true, bold = true },
+--     },
+--     --- You can override specific highlights to use other groups or a hex color
+--     --- function will be called with a Highlights and ColorScheme table
+--     ---@param highlights tokyonight.Highlights
+--     ---@param colors ColorScheme
+--     on_highlights = function(highlights, colors)
+--         highlights.Comment = { fg = colors.warning }
+--     end,
+-- })
 
-vim.cmd.colorscheme("tokyonight")
+-- vim.cmd.colorscheme("tokyonight")
+vim.cmd.colorscheme("vibr")
 
 require("neodev").setup()
 

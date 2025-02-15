@@ -22,7 +22,7 @@ vim.wo.wrap = false
 vim.o.updatetime = 250
 vim.o.timeout = true
 vim.o.timeoutlen = 300
-vim.opt.listchars = { tab = '  ', trail = '·' }
+vim.opt.listchars = { tab = "  ", trail = "·" }
 vim.opt.fillchars = "eob: "
 vim.g.netrw_banner = 0
 vim.g.netrw_fastbrowse = 1
@@ -54,6 +54,16 @@ vim.opt.rtp:prepend(lazypath)
 local spec = {}
 local plug = function(plugin, _doc) table.insert(spec, plugin); end
 plug({ "folke/neodev.nvim", ft = "lua" })
+plug({
+    "nvim-treesitter/nvim-treesitter",
+    dependencies = { "nvim-treesitter/playground" },
+    config = function()
+        require("nvim-treesitter.configs").setup({
+            highlight = { enable = true },
+            playground = { enable = true },
+        })
+    end
+})
 plug({ "nvim-lua/plenary.nvim" })
 plug({ "nvim-telescope/telescope.nvim", tag = "0.1.8" })
 plug({ "nvim-treesitter/nvim-treesitter", build = ":TSUpdate" })
@@ -70,7 +80,6 @@ plug({ "numToStr/Comment.nvim" }, "Sticking to this over builtin as I like my le
 plug({ "RRethy/nvim-align" }, "Light, handy auto-align by some separator over range")
 plug({ "lewis6991/gitsigns.nvim" })
 plug({ "akinsho/git-conflict.nvim", version = "2.1.0", config = true }, "Conflict Markers UI")
-plug({ "folke/tokyonight.nvim", lazy = false, priority = 1000, opts = {} })
 plug({
     "lukasjoc/vibr.nvim",
     lazy = false,
@@ -78,26 +87,11 @@ plug({
     opts = {},
     -- dir = "~/fun/vibr.nvim", -- Path to your local plugin
     -- name = "vibr.nvim",      -- Optional: plugin name
-    -- dev = true,         -- Optional: Marks it as a dev plugin
+    -- dev = true,              -- Optional: Marks it as a dev plugin
 })
 
 require("lazy").setup(spec, {})
 
--- require("tokyonight").setup({
---     style = "night",
---     styles = {
---         comments = { italic = true, bold = true },
---     },
---     --- You can override specific highlights to use other groups or a hex color
---     --- function will be called with a Highlights and ColorScheme table
---     ---@param highlights tokyonight.Highlights
---     ---@param colors ColorScheme
---     on_highlights = function(highlights, colors)
---         highlights.Comment = { fg = colors.warning }
---     end,
--- })
-
--- vim.cmd.colorscheme("tokyonight")
 vim.cmd.colorscheme("vibr")
 
 require("neodev").setup()
@@ -157,16 +151,16 @@ cmp.setup({
         expand = function(args) luasnip.lsp_expand(args.body) end,
     },
     mapping = cmp.mapping.preset.insert({
-        ['<C-Space>'] = cmp.mapping.complete(),
-        ['<C-e>'] = cmp.mapping.abort(),
-        ['<C-w>'] = cmp.mapping.confirm({ select = false }),
+        ["<C-Space>"] = cmp.mapping.complete(),
+        ["<C-e>"] = cmp.mapping.abort(),
+        ["<C-w>"] = cmp.mapping.confirm({ select = false }),
     }),
     sources = cmp.config.sources({
-        { name = 'nvim_lsp' },
-        { name = 'luasnip' },
+        { name = "nvim_lsp" },
+        { name = "luasnip" },
     }, {
-        { name = 'buffer' },
-    })
+            { name = "buffer" },
+        })
 })
 
 require("mason").setup()
@@ -290,7 +284,7 @@ vim.fn.sign_define("DiagnosticSignWarn", { texthl = "DiagnosticSignWarn", text =
 vim.fn.sign_define("DiagnosticSignError", { texthl = "DiagnosticSignError", text = "E", numhl = "" })
 vim.diagnostic.config({ virtual_text = false, severity_sort = true, })
 
-vim.keymap.set("n", '<leader>w', '<C-^>', { noremap = true, silent = true })
+vim.keymap.set("n", "<leader>w", "<C-^>", { noremap = true, silent = true })
 vim.keymap.set("n", "<leader>e", "<CMD>:Explore<CR>", { noremap = true, silent = true })
 vim.keymap.set("n", "<leader>r", vim.cmd.nohl, { noremap = true, silent = true })
 
@@ -299,4 +293,4 @@ vim.filetype.add({ extension = { tsm = "tsm" } }) -- tiny IR format
 vim.filetype.add({ extension = { tm = "tm" } })   -- tiny source format
 vim.filetype.add({ extension = { act = "act" } })
 
-print("We're vimming.. Have a nice day hacking! (@<@)")
+print("Were vimming.. Have a nice day hacking! (@<@)")

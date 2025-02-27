@@ -93,6 +93,14 @@ plug({
 require("lazy").setup(spec, {})
 
 vim.cmd.colorscheme("vibr")
+-- TODO: Put this into the vibr theme plugin
+local hl = vim.api.nvim_set_hl
+hl(0, "GitConflictCurrent", { link = "DiffChange" })
+hl(0, "GitConflictIncoming", { link = "DiffChange" })
+hl(0, "GitConflictAncestor", { link = "DiffText" }) -- Not sure what that is
+hl(0, "GitConflictCurrentLabel", { link =  "DiffText" })
+hl(0, "GitConflictIncomingLabel", { link = "DiffText" })
+hl(0, "GitConflictAncestorLabel", { link = "DiffText" }) -- Not sure what that is
 
 require("neodev").setup()
 
@@ -159,8 +167,8 @@ cmp.setup({
         { name = "nvim_lsp" },
         { name = "luasnip" },
     }, {
-            { name = "buffer" },
-        })
+        { name = "buffer" },
+    })
 })
 
 require("mason").setup()
@@ -197,7 +205,9 @@ local setup_volar         = function()
 end
 
 local setup_tsls          = function()
+    --- @type string
     local nvm_current_node = require("os").getenv("NVM_BIN"):match("(.*)/")
+    --- @type string
     local node_modules = nvm_current_node .. "/lib/node_modules/"
     local config = {
         filetypes = { "javascript", "typescript", "vue", "typescriptreact" },

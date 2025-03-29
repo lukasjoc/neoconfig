@@ -36,7 +36,6 @@ vim.api.nvim_create_autocmd("BufEnter", {
     end,
 })
 
--- Lazy (TODO: Try to reduce dependencies)
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
     vim.fn.system({
@@ -51,50 +50,48 @@ end
 
 vim.opt.rtp:prepend(lazypath)
 
-local spec = {}
-local plug = function(plugin, _doc) table.insert(spec, plugin); end
-plug({ "folke/neodev.nvim", ft = "lua" })
-plug({
-    "nvim-treesitter/nvim-treesitter",
-    dependencies = { "nvim-treesitter/playground" },
-    config = function()
-        require("nvim-treesitter.configs").setup({
-            highlight = { enable = true },
-            playground = { enable = true },
-        })
-    end
-})
-plug({ "nvim-lua/plenary.nvim" })
-plug({ "nvim-telescope/telescope.nvim", tag = "0.1.8" })
-plug({ "nvim-treesitter/nvim-treesitter", build = ":TSUpdate" })
-plug({ "williamboman/mason.nvim" })
-plug({ "williamboman/mason-lspconfig.nvim" })
-plug({ "neovim/nvim-lspconfig" })
-plug({ "hrsh7th/nvim-cmp" })
-plug({ "hrsh7th/cmp-nvim-lsp" })
-plug({ "hrsh7th/cmp-buffer" })
-plug({ "hrsh7th/cmp-path" })
-plug({ "L3MON4D3/LuaSnip" })
-plug({ "saadparwaiz1/cmp_luasnip" })
-plug({ "numToStr/Comment.nvim" }, "Sticking to this over builtin as I like my leader-c")
-plug({ "RRethy/nvim-align" }, "Light, handy auto-align by some separator over range")
-plug({ "lewis6991/gitsigns.nvim" })
-plug({ "akinsho/git-conflict.nvim", version = "2.1.0", config = true }, "Conflict Markers UI")
-plug({
-    "lukasjoc/vibr.nvim",
-    lazy = false,
-    priority = 1000,
-    opts = {},
-    -- dir = "~/fun/vibr.nvim", -- Path to your local plugin
-    -- name = "vibr.nvim",      -- Optional: plugin name
-    -- dev = true,              -- Optional: Marks it as a dev plugin
-})
+-- Lazy (TODO: Try to reduce dependencies)
+local lazyPackages = {
+    --  { "folke/neodev.nvim",               ft = "lua", },
+    {
+        "nvim-treesitter/nvim-treesitter",
+        dependencies = { "nvim-treesitter/playground" },
+        config = function()
+            require("nvim-treesitter.configs").setup({
+                highlight = { enable = true },
+                playground = { enable = true },
+            })
+        end
+    },
+    { "nvim-lua/plenary.nvim" },
+    { "nvim-telescope/telescope.nvim",   tag = "0.1.8" },
+    { "nvim-treesitter/nvim-treesitter", build = ":TSUpdate" },
+    { "hrsh7th/nvim-cmp" },
+    { "hrsh7th/cmp-nvim-lsp" },
+    { "hrsh7th/cmp-buffer" },
+    { "hrsh7th/cmp-path" },
+    { "L3MON4D3/LuaSnip" },
+    { "saadparwaiz1/cmp_luasnip" },
+    { "numToStr/Comment.nvim" },
+    { "RRethy/nvim-align" },
+    { "lewis6991/gitsigns.nvim" },
+    { "akinsho/git-conflict.nvim",       version = "2.1.0",  config = true },
+    {
+        "lukasjoc/vibr.nvim",
+        lazy = false,
+        priority = 1000,
+        opts = {},
+        -- dir = "~/fun/vibr.nvim", -- Path to your local plugin
+        -- name = "vibr.nvim",      -- Optional: plugin name
+        -- dev = true,              -- Optional: Marks it as a dev plugin
+    },
+}
 
-require("lazy").setup(spec, {})
+require("lazy").setup(lazyPackages, {})
 
 vim.cmd.colorscheme("vibr")
 
-require("neodev").setup()
+-- require("neodev").setup()
 
 require("nvim-treesitter.configs").setup({
     ensure_installed = {
@@ -131,18 +128,18 @@ local telescope_picker = function(cmd)
     local ivy = require("telescope.themes").get_ivy({
         border = false,
         shorten_path = true,
-        layout_config = { height = 60 }
+        layout_config = { height = 40 }
     })
     return function() cmd(ivy) end
 end
 
-vim.keymap.set("n", "<leader><leader>f", telescope_picker(telescope_builtin.find_files), {})
-vim.keymap.set("n", "<leader><leader>l", telescope_picker(telescope_builtin.current_buffer_fuzzy_find), {})
-vim.keymap.set("n", "<leader><leader>o", telescope_picker(telescope_builtin.oldfiles), {})
-vim.keymap.set("n", "<leader><leader>g", telescope_picker(telescope_builtin.live_grep), {})
-vim.keymap.set("n", "<leader><leader>s", telescope_picker(telescope_builtin.grep_string), {})
-vim.keymap.set("n", "<leader><leader>r", telescope_picker(telescope_builtin.resume), {})
-vim.keymap.set("n", "<leader><leader>b", telescope_picker(telescope_builtin.buffers), {})
+vim.keymap.set("n", "<leader><leader>f", telescope_picker(telescope_builtin.find_files), { buffer = true })
+vim.keymap.set("n", "<leader><leader>l", telescope_picker(telescope_builtin.current_buffer_fuzzy_find), { buffer = true })
+vim.keymap.set("n", "<leader><leader>o", telescope_picker(telescope_builtin.oldfiles), { buffer = true })
+vim.keymap.set("n", "<leader><leader>g", telescope_picker(telescope_builtin.live_grep), { buffer = true })
+vim.keymap.set("n", "<leader><leader>s", telescope_picker(telescope_builtin.grep_string), { buffer = true })
+vim.keymap.set("n", "<leader><leader>r", telescope_picker(telescope_builtin.resume), { buffer = true })
+vim.keymap.set("n", "<leader><leader>b", telescope_picker(telescope_builtin.buffers), { buffer = true })
 
 local cmp = require("cmp")
 local luasnip = require("luasnip")
@@ -163,82 +160,67 @@ cmp.setup({
     })
 })
 
-require("mason").setup()
-require("mason-lspconfig").setup({
-    ensure_installed = { "lua_ls", "gopls", "clangd", "rust_analyzer" },
-})
+-- vim.lsp.config.clangd   = {
+--     capabilities = require("cmp_nvim_lsp").default_capabilities(),
+--     cmd = { 'clangd', '--background-index' },
+--     root_markers = { 'compile_commands.json', 'compile_flags.txt' },
+--     filetypes = { 'c', 'h' },
+-- }
 
-local setup_with_defaults = function(name, config)
-    local config = config or {}
-    config.capabilities = require("cmp_nvim_lsp").default_capabilities()
-    require("lspconfig")[name].setup(config)
-end
+-- vim.lsp.config.eslint   = {
+--     capabilities = require("cmp_nvim_lsp").default_capabilities(),
+--     cmd = TBD
+--     filetypes = { "vue", "typescript", "javascript" },
+-- }
+--
+-- vim.lsp.config.volar    = {
+--     capabilities = require("cmp_nvim_lsp").default_capabilities(),
+--     cmd = TBD
+--     filetypes = { "vue" },
+-- }
+--
+-- vim.lsp.config.tsls     = {
+--     capabilities = require("cmp_nvim_lsp").default_capabilities(),
+--     filetypes = { "javascript", "typescript", "vue", "typescriptreact" },
+--     cmd = TBD
+--     init_options = {
+--         plugins = {
+--             {
+--                 name = "@vue/typescript-plugin",
+--                 location = require("os").getenv("NVM_BIN"):match("(.*)/") .. "/lib/node_modules/@vue/typescript-plugin",
+--                 languages = { "javascript", "typescript", "vue" },
+--             },
+--         },
+--     }
+-- }
 
-local setup_clangd        = function()
-    local config = {
-        cmd = { "clangd", "--background-index" },
-        filetypes = { "c" },
-    }
-    setup_with_defaults("clangd", config)
-end
-
-local setup_eslint        = function()
-    local config = {
-        filetypes = { "vue", "typescript", "javascript" }
-    };
-    setup_with_defaults("eslint", config)
-end
-
-local setup_volar         = function()
-    local config = {
-        filetypes = { "vue" }
-    }
-    setup_with_defaults("volar", config)
-end
-
-local setup_tsls          = function()
-    local nvm_current_node = require("os").getenv("NVM_BIN"):match("(.*)/")
-    local node_modules = nvm_current_node .. "/lib/node_modules/"
-    local config = {
-        filetypes = { "javascript", "typescript", "vue", "typescriptreact" },
-        init_options = {
-            plugins = {
-                {
-                    name = "@vue/typescript-plugin",
-                    location = node_modules .. "@vue/typescript-plugin",
-                    languages = { "javascript", "typescript", "vue" },
-                },
+vim.lsp.config.luals = {
+    capabilities = require("cmp_nvim_lsp").default_capabilities(),
+    cmd = { "lua-language-server" },
+    root_markers = { ".luarc.json" },
+    setttings = {
+        Lua = {
+            telemetry = {
+                enable = false,
             },
         }
-    }
-    setup_with_defaults("ts_ls", config)
-end
+    },
+    filetypes = { "lua" },
+}
 
-local setup_luals         = function()
-    local config = {
-        format = {
-            enable = true,
-        },
-        filetypes = { "lua" },
-        single_file_support = true,
-        settings = {
-            Lua = {
-                workspace = { checkThirdParty = false },
-                telemetry = { enable = false },
-                completion = { callSnippet = "Replace" }
-            }
-        }
-    }
-    setup_with_defaults("lua_ls", config)
-end
+vim.lsp.config.gopls = {
+    capabilities = require("cmp_nvim_lsp").default_capabilities(),
+    cmd = { "gopls" },
+    filetypes = { "go", "gomod", "gowork", "gosum" },
+}
 
-require("mason-lspconfig").setup_handlers({
-    ["lua_ls"] = setup_luals,
-    ["clangd"] = setup_clangd,
-    ["volar"] = setup_volar,
-    ["ts_ls"] = setup_tsls,
-    ["eslint"] = setup_eslint,
-    setup_with_defaults,
+vim.lsp.enable({
+    "luals",
+    "gopls",
+    -- "eslint",
+    -- "volar",
+    -- "tsls",
+    -- "clangd",
 })
 
 require("Comment").setup({
@@ -253,7 +235,7 @@ vim.keymap.set("n", "<leader>bl", function()
         full = true,
         ignore_whitespace = true,
     })
-end, { noremap = true, silent = true })
+end, { buffer = true, noremap = true, silent = true })
 
 vim.diagnostic.config({
     severity_sort = true,
@@ -282,9 +264,9 @@ local toggle_virtual_lines = function()
     vim.diagnostic.config(opts);
 end
 
-vim.keymap.set("n", "<leader>w", "<C-^>", { noremap = true, silent = true })
-vim.keymap.set("n", "<leader>e", "<CMD>:Explore<CR>", { noremap = true, silent = true })
-vim.keymap.set("n", "<leader>r", vim.cmd.nohl, { noremap = true, silent = true })
+vim.keymap.set("n", "<leader>w", "<C-^>", { buffer = true, noremap = true, silent = true })
+vim.keymap.set("n", "<leader>e", "<CMD>:Explore<CR>", { buffer = true, noremap = true, silent = true })
+vim.keymap.set("n", "<leader>r", vim.cmd.nohl, { buffer = true, noremap = true, silent = true })
 vim.api.nvim_create_autocmd("LspAttach", {
     group = vim.api.nvim_create_augroup("UserLspConfig", {}),
     callback = function(event)

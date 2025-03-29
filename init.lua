@@ -98,7 +98,7 @@ require("neodev").setup()
 
 require("nvim-treesitter.configs").setup({
     ensure_installed = {
-        "vim", "lua", "comment", "c", "bash", "vimdoc", "rust",
+        "lua", "comment", "c", "bash", "rust",
         "javascript", "html", "css", "go", "typescript",
     },
     sync_install = true,
@@ -158,9 +158,9 @@ cmp.setup({
     sources = cmp.config.sources({
         { name = "nvim_lsp" },
         { name = "luasnip" },
-    }, {
-            { name = "buffer" },
-        })
+        { name = "buffer" },
+        { name = "path" },
+    })
 })
 
 require("mason").setup()
@@ -241,10 +241,55 @@ require("mason-lspconfig").setup_handlers({
     setup_with_defaults,
 })
 
+require("Comment").setup({
+    toggler = { line = "<leader>c" },
+    opleader = { line = "<leader>c" },
+})
+
+require("gitsigns").setup();
+
+vim.keymap.set("n", "<leader>bl", function()
+    require("gitsigns").blame_line({
+        full = true,
+        ignore_whitespace = true,
+    })
+end, { noremap = true, silent = true })
+
+vim.diagnostic.config({
+    severity_sort = true,
+    virtual_text = false,
+    virtual_lines = false,
+    float = {
+        scope = "cursor",
+        severity_sort = true,
+    },
+    signs = {
+        text = {
+            [vim.diagnostic.severity.ERROR] = "E",
+            [vim.diagnostic.severity.WARN] = "W",
+            [vim.diagnostic.severity.HINT] = "H",
+            [vim.diagnostic.severity.INFO] = "I",
+        },
+    }
+})
+
+local toggle_virtual_lines = function()
+    local opts = vim.diagnostic.config() or {};
+    opts.virtual_lines = not opts.virtual_lines
+    if opts.virtual_lines then
+        opts.virtual_lines = { current_line = false }
+    end
+    vim.diagnostic.config(opts);
+end
+
+vim.keymap.set("n", "<leader>w", "<C-^>", { noremap = true, silent = true })
+vim.keymap.set("n", "<leader>e", "<CMD>:Explore<CR>", { noremap = true, silent = true })
+vim.keymap.set("n", "<leader>r", vim.cmd.nohl, { noremap = true, silent = true })
 vim.api.nvim_create_autocmd("LspAttach", {
     group = vim.api.nvim_create_augroup("UserLspConfig", {}),
     callback = function(event)
         local opts = { buffer = event.buf, noremap = true }
+        vim.keymap.set("n", "<leader>f", toggle_virtual_lines, opts)
         vim.keymap.set("n", "F", vim.diagnostic.open_float, opts)
         vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
         vim.keymap.set("n", "S", vim.lsp.buf.signature_help, opts)
@@ -260,33 +305,10 @@ vim.api.nvim_create_autocmd("LspAttach", {
             end
             vim.lsp.buf.format({ async = true })
         end, opts)
-        vim.keymap.set("n", "<leader><leader>e", telescope_picker(telescope_builtin.diagnostics),
-            { unpack(opts), buffer = 0 })
-        vim.keymap.set("n", "U", telescope_picker(telescope_builtin.lsp_references), { unpack(opts), buffer = 0 })
+        vim.keymap.set("n", "<leader><leader>e", telescope_picker(telescope_builtin.diagnostics), opts)
+        vim.keymap.set("n", "U", telescope_picker(telescope_builtin.lsp_references), opts)
     end
 })
-
-require("Comment").setup({
-    toggler = { line = "<leader>c" },
-    opleader = { line = "<leader>c" },
-})
-
-require("gitsigns").setup();
-
-local gitsigns_show_blame_info = function()
-    require("gitsigns").blame_line({ full = true, ignore_whitespace = true })
-end
-
-vim.keymap.set("n", "<leader>bl", gitsigns_show_blame_info, { noremap = true, silent = true })
-vim.fn.sign_define("DiagnosticSignInfo", { texthl = "DiagnosticSignInfo", text = "I", numhl = "" })
-vim.fn.sign_define("DiagnosticSignHint", { texthl = "DiagnosticSignHint", text = "H", numhl = "" })
-vim.fn.sign_define("DiagnosticSignWarn", { texthl = "DiagnosticSignWarn", text = "W", numhl = "" })
-vim.fn.sign_define("DiagnosticSignError", { texthl = "DiagnosticSignError", text = "E", numhl = "" })
-vim.diagnostic.config({ virtual_text = false, severity_sort = true, })
-
-vim.keymap.set("n", "<leader>w", "<C-^>", { noremap = true, silent = true })
-vim.keymap.set("n", "<leader>e", "<CMD>:Explore<CR>", { noremap = true, silent = true })
-vim.keymap.set("n", "<leader>r", vim.cmd.nohl, { noremap = true, silent = true })
 
 -- Setup for custom text formats and languages..
 vim.filetype.add({ extension = { tsm = "tsm" } }) -- tiny IR format

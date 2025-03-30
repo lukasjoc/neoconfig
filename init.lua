@@ -1,3 +1,4 @@
+--NOTE: Requires v0.11.0
 vim.g.mapleader = ","
 vim.g.maplocalleader = ","
 vim.opt.title = true
@@ -52,7 +53,6 @@ vim.opt.rtp:prepend(lazypath)
 
 -- Lazy (TODO: Try to reduce dependencies)
 local lazyPackages = {
-    --  { "folke/neodev.nvim",               ft = "lua", },
     {
         "nvim-treesitter/nvim-treesitter",
         dependencies = { "nvim-treesitter/playground" },
@@ -64,12 +64,14 @@ local lazyPackages = {
         end
     },
     { "nvim-lua/plenary.nvim" },
-    { "nvim-telescope/telescope.nvim",   branch = "0.1.x" },
+    { "nvim-telescope/telescope.nvim",   tag = "0.1.8" },
     { "nvim-treesitter/nvim-treesitter", build = ":TSUpdate" },
+    -- TODO: Look at blink
     { "hrsh7th/nvim-cmp" },
     { "hrsh7th/cmp-nvim-lsp" },
     { "hrsh7th/cmp-buffer" },
     { "hrsh7th/cmp-path" },
+    --
     { "L3MON4D3/LuaSnip" },
     { "saadparwaiz1/cmp_luasnip" },
     { "numToStr/Comment.nvim" },
@@ -91,22 +93,12 @@ require("lazy").setup(lazyPackages, {})
 
 vim.cmd.colorscheme("vibr")
 
--- require("neodev").setup()
-
-require("nvim-treesitter.configs").setup({
-    ensure_installed = {
-        "lua", "comment", "c", "bash", "rust",
-        "javascript", "html", "css", "go", "typescript",
-    },
-    sync_install = true,
-    auto_install = false,
-    ignore_install = { "java", "tsx", "fish" },
-    highlight = { enable = true, additional_vim_regex_highlighting = false },
-    indent = { enable = true },
+require("Comment").setup({
+    toggler = { line = "<leader>c" },
+    opleader = { line = "<leader>c" },
 })
 
-local telescope = require("telescope")
-telescope.setup({
+require("telescope").setup({
     pickers = {
         find_files = {
             hidden = true,
@@ -123,23 +115,35 @@ telescope.setup({
         }
     },
 })
-local telescope_builtin = require("telescope.builtin")
-local telescope_picker = function(cmd)
-    local ivy = require("telescope.themes").get_ivy({
-        border = false,
-        shorten_path = true,
-        layout_config = { height = 40 }
-    })
-    return function() cmd(ivy) end
+
+require("nvim-treesitter.configs").setup({
+    ensure_installed = { "lua", "comment" },
+    sync_install = true,
+    auto_install = false,
+    highlight = {
+        enable = true,
+        additional_vim_regex_highlighting = false,
+    },
+    indent = { enable = true },
+})
+
+local make_picker_for_cmd = function(cmd)
+    return function()
+        cmd(require("telescope.themes").get_ivy({
+            border = false,
+            shorten_path = true,
+            layout_config = { height = 40 }
+        }))
+    end
 end
 
-vim.keymap.set("n", "<leader><leader>f", telescope_picker(telescope_builtin.find_files), { buffer = true })
-vim.keymap.set("n", "<leader><leader>l", telescope_picker(telescope_builtin.current_buffer_fuzzy_find), { buffer = true })
-vim.keymap.set("n", "<leader><leader>o", telescope_picker(telescope_builtin.oldfiles), { buffer = true })
-vim.keymap.set("n", "<leader><leader>g", telescope_picker(telescope_builtin.live_grep), { buffer = true })
-vim.keymap.set("n", "<leader><leader>s", telescope_picker(telescope_builtin.grep_string), { buffer = true })
-vim.keymap.set("n", "<leader><leader>r", telescope_picker(telescope_builtin.resume), { buffer = true })
-vim.keymap.set("n", "<leader><leader>b", telescope_picker(telescope_builtin.buffers), { buffer = true })
+vim.keymap.set("n", "<leader><leader>f", make_picker_for_cmd(require("telescope.builtin").find_files), {})
+vim.keymap.set("n", "<leader><leader>l", make_picker_for_cmd(require("telescope.builtin").current_buffer_fuzzy_find), {})
+vim.keymap.set("n", "<leader><leader>o", make_picker_for_cmd(require("telescope.builtin").oldfiles), {})
+vim.keymap.set("n", "<leader><leader>g", make_picker_for_cmd(require("telescope.builtin").live_grep), {})
+vim.keymap.set("n", "<leader><leader>s", make_picker_for_cmd(require("telescope.builtin").grep_string), {})
+vim.keymap.set("n", "<leader><leader>r", make_picker_for_cmd(require("telescope.builtin").resume), {})
+vim.keymap.set("n", "<leader><leader>b", make_picker_for_cmd(require("telescope.builtin").buffers), {})
 
 local cmp = require("cmp")
 local luasnip = require("luasnip")
@@ -223,11 +227,6 @@ vim.lsp.enable({
     -- "clangd",
 })
 
-require("Comment").setup({
-    toggler = { line = "<leader>c" },
-    opleader = { line = "<leader>c" },
-})
-
 require("gitsigns").setup();
 
 vim.keymap.set("n", "<leader>bl", function()
@@ -235,7 +234,7 @@ vim.keymap.set("n", "<leader>bl", function()
         full = true,
         ignore_whitespace = true,
     })
-end, { buffer = true, noremap = true, silent = true })
+end, { noremap = true, silent = true })
 
 vim.diagnostic.config({
     severity_sort = true,
@@ -264,14 +263,14 @@ local toggle_virtual_lines = function()
     vim.diagnostic.config(opts);
 end
 
-vim.keymap.set("n", "<leader>w", "<C-^>", { buffer = true, noremap = true, silent = true })
-vim.keymap.set("n", "<leader>e", "<CMD>:Explore<CR>", { buffer = true, noremap = true, silent = true })
-vim.keymap.set("n", "<leader>r", vim.cmd.nohl, { buffer = true, noremap = true, silent = true })
+vim.keymap.set("n", "<leader>w", "<C-^>", { noremap = true, silent = true })
+vim.keymap.set("n", "<leader>e", "<CMD>:Explore<CR>", { noremap = true, silent = true })
+vim.keymap.set("n", "<leader>r", vim.cmd.nohl, { noremap = true, silent = true })
 vim.api.nvim_create_autocmd("LspAttach", {
     group = vim.api.nvim_create_augroup("UserLspConfig", {}),
     callback = function(event)
         local opts = { buffer = event.buf, noremap = true }
-        vim.keymap.set("n", "<leader>f", toggle_virtual_lines, opts)
+        vim.keymap.set("n", "<leader>v", toggle_virtual_lines, opts)
         vim.keymap.set("n", "F", vim.diagnostic.open_float, opts)
         vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
         vim.keymap.set("n", "S", vim.lsp.buf.signature_help, opts)
@@ -287,8 +286,8 @@ vim.api.nvim_create_autocmd("LspAttach", {
             end
             vim.lsp.buf.format({ async = true })
         end, opts)
-        vim.keymap.set("n", "<leader><leader>e", telescope_picker(telescope_builtin.diagnostics), opts)
-        vim.keymap.set("n", "U", telescope_picker(telescope_builtin.lsp_references), opts)
+        vim.keymap.set("n", "<leader><leader>e", make_picker_for_cmd(require("telescope.builtin").diagnostics), opts)
+        vim.keymap.set("n", "U", make_picker_for_cmd(require("telescope.builtin").lsp_references), opts)
     end
 })
 

@@ -53,6 +53,8 @@ vim.opt.rtp:prepend(lazypath)
 
 -- Lazy (TODO: Try to reduce dependencies)
 local lazyPackages = {
+    -- NOTE: Only still in here because of freaking eslint
+    { "neovim/nvim-lspconfig", },
     {
         "nvim-treesitter/nvim-treesitter",
         dependencies = { "nvim-treesitter/playground" },
@@ -164,39 +166,39 @@ cmp.setup({
     })
 })
 
--- vim.lsp.config.clangd   = {
---     capabilities = require("cmp_nvim_lsp").default_capabilities(),
---     cmd = { 'clangd', '--background-index' },
---     root_markers = { 'compile_commands.json', 'compile_flags.txt' },
---     filetypes = { 'c', 'h' },
--- }
+-- TODO: lspconfig sets up the client commands in a certain way that i dont get
+-- out of the box with `vim.lsp.` so i have to find a way to achive that as well.
+require("lspconfig").eslint.setup({
+    capabilities = require("cmp_nvim_lsp").default_capabilities(),
+    cmd = { "vscode-eslint-language-server", "--stdio" },
+    filetypes = { "vue", "typescript", "javascript" },
+})
 
--- vim.lsp.config.eslint   = {
---     capabilities = require("cmp_nvim_lsp").default_capabilities(),
---     cmd = TBD
---     filetypes = { "vue", "typescript", "javascript" },
--- }
---
--- vim.lsp.config.volar    = {
---     capabilities = require("cmp_nvim_lsp").default_capabilities(),
---     cmd = TBD
---     filetypes = { "vue" },
--- }
---
--- vim.lsp.config.tsls     = {
---     capabilities = require("cmp_nvim_lsp").default_capabilities(),
---     filetypes = { "javascript", "typescript", "vue", "typescriptreact" },
---     cmd = TBD
---     init_options = {
---         plugins = {
---             {
---                 name = "@vue/typescript-plugin",
---                 location = require("os").getenv("NVM_BIN"):match("(.*)/") .. "/lib/node_modules/@vue/typescript-plugin",
---                 languages = { "javascript", "typescript", "vue" },
---             },
---         },
---     }
--- }
+vim.lsp.config.vuels = {
+    capabilities = require("cmp_nvim_lsp").default_capabilities(),
+    cmd = { "vue-language-server", "--stdio" },
+    init_options = {
+        typescript = {
+            tsdk = require("os").getenv("NVM_BIN"):match("(.*)/") .. "/lib/node_modules/typescript/lib",
+        },
+    },
+    filetypes = { "vue" },
+}
+
+vim.lsp.config.tsls  = {
+    capabilities = require("cmp_nvim_lsp").default_capabilities(),
+    filetypes = { "javascript", "typescript", "vue", "typescriptreact" },
+    cmd = { "typescript-language-server", "--stdio" },
+    init_options = {
+        plugins = {
+            {
+                name = "@vue/typescript-plugin",
+                location = require("os").getenv("NVM_BIN"):match("(.*)/") .. "/lib/node_modules/@vue/typescript-plugin",
+                languages = { "javascript", "typescript", "vue" },
+            },
+        },
+    }
+}
 
 vim.lsp.config.luals = {
     capabilities = require("cmp_nvim_lsp").default_capabilities(),
@@ -221,10 +223,8 @@ vim.lsp.config.gopls = {
 vim.lsp.enable({
     "luals",
     "gopls",
-    -- "eslint",
-    -- "volar",
-    -- "tsls",
-    -- "clangd",
+    "tsls",
+    "vuels",
 })
 
 require("gitsigns").setup();
@@ -279,12 +279,11 @@ vim.api.nvim_create_autocmd("LspAttach", {
         vim.keymap.set("n", "gi", vim.lsp.buf.implementation, opts)
         vim.keymap.set("n", "gl", vim.lsp.buf.definition, opts)
         vim.keymap.set({ "n", "v" }, "<leader>we", function()
-            local eslint_lsp_active = #vim.lsp.get_clients({ name = "eslint" })
-            if eslint_lsp_active > 0 then
+            if #vim.lsp.get_clients({ name = "eslint" }) > 0 then
                 vim.api.nvim_command("EslintFixAll")
-                return;
+            else
+                vim.lsp.buf.format({ async = true })
             end
-            vim.lsp.buf.format({ async = true })
         end, opts)
         vim.keymap.set("n", "<leader><leader>e", make_picker_for_cmd(require("telescope.builtin").diagnostics), opts)
         vim.keymap.set("n", "U", make_picker_for_cmd(require("telescope.builtin").lsp_references), opts)

@@ -29,7 +29,7 @@ vim.g.netrw_banner = 0
 vim.g.netrw_fastbrowse = 1
 vim.g.netrw_liststyle = 1
 
--- Dont autmatically add commented newlines
+-- Prevent automatic comment insertion.
 vim.api.nvim_create_autocmd("BufEnter", {
     pattern = "*",
     callback = function()
@@ -53,8 +53,7 @@ vim.opt.rtp:prepend(lazypath)
 
 -- Lazy (TODO: Try to reduce dependencies)
 local lazyPackages = {
-    -- NOTE: Only still in here because of freaking eslint
-    { "neovim/nvim-lspconfig", },
+    { "neovim/nvim-lspconfig", }, -- NOTE: Only still in here because of freaking eslint
     {
         "nvim-treesitter/nvim-treesitter",
         dependencies = { "nvim-treesitter/playground" },
@@ -68,18 +67,16 @@ local lazyPackages = {
     { "nvim-lua/plenary.nvim" },
     { "nvim-telescope/telescope.nvim",   tag = "0.1.8" },
     { "nvim-treesitter/nvim-treesitter", build = ":TSUpdate" },
-    -- TODO: Look at blink
-    { "hrsh7th/nvim-cmp" },
-    { "hrsh7th/cmp-nvim-lsp" },
-    { "hrsh7th/cmp-buffer" },
-    { "hrsh7th/cmp-path" },
-    --
-    { "L3MON4D3/LuaSnip" },
+    { "hrsh7th/nvim-cmp" },                                                   -- TODO: Blink??
+    { "hrsh7th/cmp-nvim-lsp" },                                               -- TODO: Blink??
+    { "hrsh7th/cmp-buffer" },                                                 -- TODO: Blink??
+    { "hrsh7th/cmp-path" },                                                   -- TODO: Blink??
+    { "L3MON4D3/LuaSnip" },                                                   -- TODO: Blink??
     { "saadparwaiz1/cmp_luasnip" },
-    { "numToStr/Comment.nvim" },
-    { "RRethy/nvim-align" },
+    { "numToStr/Comment.nvim" },                                              -- TOOD: Find a way to get rid of this
+    { "RRethy/nvim-align" },                                                  -- TOOD: Find a way to get rid of this
     { "lewis6991/gitsigns.nvim" },
-    { "akinsho/git-conflict.nvim",       version = "2.1.0",  config = true },
+    { "akinsho/git-conflict.nvim",       version = "2.1.0",  config = true }, -- TOOD: Find a way to get rid of this
     {
         "lukasjoc/vibr.nvim",
         lazy = false,
@@ -93,7 +90,11 @@ local lazyPackages = {
 
 require("lazy").setup(lazyPackages, {})
 
-vim.cmd.colorscheme("vibr")
+-- TODO: In very bright environments the selection background in the dark theme, is barely readable -> Maybe the background should be a slightly warmer one instead.
+-- TODO: Im using a blue for search that is also used in other highlights -> It will overlap.
+-- TODO: Diagnostic error should be more visible.
+require("vibr").load()
+vim.opt.background = "light"
 
 require("Comment").setup({
     toggler = { line = "<leader>c" },

@@ -78,13 +78,13 @@ local lazyPackages = {
     { "lewis6991/gitsigns.nvim" },
     { "akinsho/git-conflict.nvim",       version = "2.1.0",  config = true }, -- TOOD: Find a way to get rid of this
     {
-        "lukasjoc/vibr.nvim",
+        -- "lukasjoc/vibr.nvim",
         lazy = false,
         priority = 1000,
         opts = {},
-        -- dir = "~/fun/vibr.nvim", -- Path to your local plugin
-        -- name = "vibr.nvim",      -- Optional: plugin name
-        -- dev = true,              -- Optional: Marks it as a dev plugin
+        dir = "~/fun/vibr.nvim", -- Path to your local plugin
+        name = "vibr.nvim",      -- Optional: plugin name
+        dev = true,              -- Optional: Marks it as a dev plugin
     },
 }
 
@@ -168,13 +168,11 @@ cmp.setup({
     })
 })
 
--- TODO: lspconfig sets up the client commands in a certain way that i dont get
--- out of the box with `vim.lsp.` so i have to find a way to achive that as well.
-
 if vim.loop.fs_stat(vim.loop.cwd() .. '/' .. '.oxlintrc.json') then
-    print("Found oxlint setup...")
     vim.lsp.enable("oxlint")
 else
+    -- TODO: lspconfig sets up the client commands in a certain way that i dont get
+    -- out of the box with `vim.lsp.` so i have to find a way to achive that as well.
     require("lspconfig").eslint.setup({
         capabilities = require("cmp_nvim_lsp").default_capabilities(),
         cmd = { "vscode-eslint-language-server", "--stdio" },
@@ -183,7 +181,7 @@ else
 end
 
 
-vim.lsp.config.vuels = {
+vim.lsp.config.vuels  = {
     capabilities = require("cmp_nvim_lsp").default_capabilities(),
     cmd = { "vue-language-server", "--stdio" },
     init_options = {
@@ -194,7 +192,7 @@ vim.lsp.config.vuels = {
     filetypes = { "vue" },
 }
 
-vim.lsp.config.tsls  = {
+vim.lsp.config.tsls   = {
     capabilities = require("cmp_nvim_lsp").default_capabilities(),
     filetypes = { "javascript", "typescript", "vue", "typescriptreact" },
     cmd = { "typescript-language-server", "--stdio" },
@@ -209,13 +207,7 @@ vim.lsp.config.tsls  = {
     }
 }
 
--- vim.lsp.config.oxcls = {
---     capabilities = require("cmp_nvim_lsp").default_capabilities(),
---     filetypes = { "javascript", "typescript", "vue", "typescriptreact" },
---     cmd = { "oxc_language_server" },
--- }
-
-vim.lsp.config.luals = {
+vim.lsp.config.luals  = {
     capabilities = require("cmp_nvim_lsp").default_capabilities(),
     cmd = { "lua-language-server" },
     root_markers = { ".luarc.json" },
@@ -229,10 +221,22 @@ vim.lsp.config.luals = {
     filetypes = { "lua" },
 }
 
-vim.lsp.config.gopls = {
+vim.lsp.config.gopls  = {
     capabilities = require("cmp_nvim_lsp").default_capabilities(),
     cmd = { "gopls" },
     filetypes = { "go", "gomod", "gowork", "gosum" },
+}
+
+vim.lsp.config.rustls = {
+    capabilities = require("cmp_nvim_lsp").default_capabilities(),
+    cmd = { "rust-analyzer" },
+    filetypes = { "rust" },
+}
+
+vim.lsp.config.oxcls = {
+    capabilities = require("cmp_nvim_lsp").default_capabilities(),
+    cmd = { "oxc_language_server" },
+    filetypes = { "javascript", "javascriptreact", "typescript" },
 }
 
 vim.lsp.enable({
@@ -240,6 +244,8 @@ vim.lsp.enable({
     "gopls",
     "tsls",
     "vuels",
+    "rustls",
+    "oxcls",
 })
 
 require("gitsigns").setup();
@@ -287,7 +293,9 @@ vim.api.nvim_create_autocmd("LspAttach", {
         local opts = { buffer = event.buf, noremap = true }
         vim.keymap.set("n", "<leader>v", toggle_virtual_lines, opts)
         vim.keymap.set("n", "F", vim.diagnostic.open_float, opts)
-        vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
+        vim.keymap.set("n", "K", function()
+            vim.lsp.buf.hover({ border = "single" })
+        end, opts)
         vim.keymap.set("n", "S", vim.lsp.buf.signature_help, opts)
         vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, opts)
         vim.keymap.set("n", "<leader>re", vim.lsp.buf.rename, opts)

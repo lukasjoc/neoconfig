@@ -77,15 +77,15 @@ local lazyPackages = {
     { "RRethy/nvim-align" },                                                  -- TOOD: Find a way to get rid of this
     { "lewis6991/gitsigns.nvim" },
     { "akinsho/git-conflict.nvim",       version = "2.1.0",  config = true }, -- TOOD: Find a way to get rid of this
-    {
-        -- "lukasjoc/vibr.nvim",
-        lazy = false,
-        priority = 1000,
-        opts = {},
-        dir = "~/fun/vibr.nvim", -- Path to your local plugin
-        name = "vibr.nvim",      -- Optional: plugin name
-        dev = true,              -- Optional: Marks it as a dev plugin
-    },
+    -- {
+    --     -- "lukasjoc/vibr.nvim",
+    --     lazy = false,
+    --     priority = 1000,
+    --     opts = {},
+    --     dir = "~/fun/vibr.nvim", -- Path to your local plugin
+    --     name = "vibr.nvim",      -- Optional: plugin name
+    --     dev = true,              -- Optional: Marks it as a dev plugin
+    -- },
 }
 
 require("lazy").setup(lazyPackages, {})
@@ -233,7 +233,7 @@ vim.lsp.config.rustls = {
     filetypes = { "rust" },
 }
 
-vim.lsp.config.oxcls = {
+vim.lsp.config.oxcls  = {
     capabilities = require("cmp_nvim_lsp").default_capabilities(),
     cmd = { "oxc_language_server" },
     filetypes = { "javascript", "javascriptreact", "typescript" },

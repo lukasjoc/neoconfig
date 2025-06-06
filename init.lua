@@ -233,19 +233,13 @@ vim.lsp.config.rustls = {
     filetypes = { "rust" },
 }
 
-vim.lsp.config.oxcls  = {
-    capabilities = require("cmp_nvim_lsp").default_capabilities(),
-    cmd = { "oxc_language_server" },
-    filetypes = { "javascript", "javascriptreact", "typescript" },
-}
-
+-- FIXME: I suppose for most of these i dont really need to configure anything
 vim.lsp.enable({
     "luals",
     "gopls",
     "tsls",
     "vuels",
     "rustls",
-    "oxcls",
 })
 
 require("gitsigns").setup();

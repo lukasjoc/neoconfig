@@ -93,8 +93,9 @@ require("lazy").setup(lazyPackages, {})
 -- TODO: In very bright environments the selection background in the dark theme, is barely readable -> Maybe the background should be a slightly warmer one instead.
 -- TODO: Im using a blue for search that is also used in other highlights -> It will overlap.
 -- TODO: Diagnostic error should be more visible.
-require("vibr").load()
-vim.opt.background = "light"
+-- require("vibr").load()
+-- vim.opt.background = "light"
+vim.cmd("colo retrobox")
 
 require("Comment").setup({
     toggler = { line = "<leader>c" },
@@ -169,11 +170,18 @@ cmp.setup({
 
 -- TODO: lspconfig sets up the client commands in a certain way that i dont get
 -- out of the box with `vim.lsp.` so i have to find a way to achive that as well.
-require("lspconfig").eslint.setup({
-    capabilities = require("cmp_nvim_lsp").default_capabilities(),
-    cmd = { "vscode-eslint-language-server", "--stdio" },
-    filetypes = { "vue", "typescript", "javascript" },
-})
+
+if vim.loop.fs_stat(vim.loop.cwd() .. '/' .. '.oxlintrc.json') then
+    print("Found oxlint setup...")
+    vim.lsp.enable("oxlint")
+else
+    require("lspconfig").eslint.setup({
+        capabilities = require("cmp_nvim_lsp").default_capabilities(),
+        cmd = { "vscode-eslint-language-server", "--stdio" },
+        filetypes = { "vue", "typescript", "javascript" },
+    })
+end
+
 
 vim.lsp.config.vuels = {
     capabilities = require("cmp_nvim_lsp").default_capabilities(),
@@ -200,6 +208,12 @@ vim.lsp.config.tsls  = {
         },
     }
 }
+
+-- vim.lsp.config.oxcls = {
+--     capabilities = require("cmp_nvim_lsp").default_capabilities(),
+--     filetypes = { "javascript", "typescript", "vue", "typescriptreact" },
+--     cmd = { "oxc_language_server" },
+-- }
 
 vim.lsp.config.luals = {
     capabilities = require("cmp_nvim_lsp").default_capabilities(),

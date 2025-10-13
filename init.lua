@@ -1,4 +1,8 @@
 --NOTE: Requires v0.11.0
+
+-- The `require('lspconfig')` "framework" is deprecated, use vim.lsp.config (see :h elp lspconfig-nvim-0.11) instead.
+vim.deprecate = function() end -- TODO: fix this deprecation
+
 vim.g.mapleader = ","
 vim.g.maplocalleader = ","
 vim.opt.title = true
@@ -71,7 +75,7 @@ local lazyPackages = {
     { "hrsh7th/cmp-nvim-lsp" },                                               -- TODO: Blink??
     { "hrsh7th/cmp-buffer" },                                                 -- TODO: Blink??
     { "hrsh7th/cmp-path" },                                                   -- TODO: Blink??
-    { "L3MON4D3/LuaSnip" },                                                   -- TODO: Blink??
+    { "L3MON4D3/LuaSnip", run = "make install_jsregexp" },
     { "saadparwaiz1/cmp_luasnip" },
     { "numToStr/Comment.nvim" },                                              -- TOOD: Find a way to get rid of this
     { "RRethy/nvim-align" },                                                  -- TOOD: Find a way to get rid of this
@@ -101,7 +105,7 @@ require("lazy").setup(lazyPackages, {})
 local c = require('vscode.colors').get_colors()
 require('vscode').setup({
     -- Alternatively set style in setup
-    -- style = 'light'
+    -- style = 'light',
 
     -- Enable transparent background
     transparent = true,
@@ -216,6 +220,7 @@ else
 end
 
 
+-- TODO: Upgrade to latest language server: https://github.com/vuejs/language-tools/wiki/Neovim
 vim.lsp.config.vuels  = {
     capabilities = require("cmp_nvim_lsp").default_capabilities(),
     cmd = { "vue-language-server", "--stdio" },

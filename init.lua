@@ -81,15 +81,6 @@ local lazyPackages = {
     { "RRethy/nvim-align" },                                                  -- TOOD: Find a way to get rid of this
     { "lewis6991/gitsigns.nvim" },
     { "akinsho/git-conflict.nvim",       version = "2.1.0",  config = true }, -- TOOD: Find a way to get rid of this
-    -- {
-    --     -- "lukasjoc/vibr.nvim",
-    --     lazy = false,
-    --     priority = 1000,
-    --     opts = {},
-    --     dir = "~/fun/vibr.nvim", -- Path to your local plugin
-    --     name = "vibr.nvim",      -- Optional: plugin name
-    --     dev = true,              -- Optional: Marks it as a dev plugin
-    -- },
     { "Mofiqul/vscode.nvim" }
 }
 
@@ -207,26 +198,27 @@ cmp.setup({
     })
 })
 
-if vim.loop.fs_stat(vim.loop.cwd() .. '/' .. '.oxlintrc.json') then
-    vim.lsp.enable("oxlint")
-else
-    -- TODO: lspconfig sets up the client commands in a certain way that i dont get
-    -- out of the box with `vim.lsp.` so i have to find a way to achive that as well.
-    require("lspconfig").eslint.setup({
-        capabilities = require("cmp_nvim_lsp").default_capabilities(),
-        cmd = { "vscode-eslint-language-server", "--stdio" },
-        filetypes = { "vue", "typescript", "javascript" },
-    })
-end
+-- if vim.loop.fs_stat(vim.loop.cwd() .. '/' .. '.oxlintrc.json') then
+--     vim.lsp.enable("oxlint")
+-- else
+--     -- TODO: lspconfig sets up the client commands in a certain way that i dont get
+--     -- out of the box with `vim.lsp.` so i have to find a way to achive that as well.
+--     require("lspconfig").eslint.setup({
+--         capabilities = require("cmp_nvim_lsp").default_capabilities(),
+--         cmd = { "vscode-eslint-language-server", "--stdio" },
+--         filetypes = { "vue", "typescript", "javascript" },
+--     })
+-- end
 
+local pnpm_global_store = require("os").getenv("PNPM_HOME") .. "/global/5/node_modules"
 
 -- TODO: Upgrade to latest language server: https://github.com/vuejs/language-tools/wiki/Neovim
-vim.lsp.config.vuels  = {
+vim.lsp.config.vuels    = {
     capabilities = require("cmp_nvim_lsp").default_capabilities(),
     cmd = { "vue-language-server", "--stdio" },
     init_options = {
         typescript = {
-            tsdk = require("os").getenv("NVM_BIN"):match("(.*)/") .. "/lib/node_modules/typescript/lib",
+            tsdk = pnpm_global_store .. "/typescript/lib",
         },
     },
     filetypes = { "vue" },
@@ -240,14 +232,15 @@ vim.lsp.config.tsls   = {
         plugins = {
             {
                 name = "@vue/typescript-plugin",
-                location = require("os").getenv("NVM_BIN"):match("(.*)/") .. "/lib/node_modules/@vue/typescript-plugin",
+                -- location = require("os").getenv("NVM_BIN"):match("(.*)/") .. "/lib/node_modules/@vue/typescript-plugin",
+                location = pnpm_global_store .. "/@vue/typescript-plugin",
                 languages = { "javascript", "typescript", "vue" },
             },
         },
     }
 }
 
-vim.lsp.config.luals  = {
+vim.lsp.config.luals    = {
     capabilities = require("cmp_nvim_lsp").default_capabilities(),
     cmd = { "lua-language-server" },
     root_markers = { ".luarc.json" },
@@ -261,13 +254,13 @@ vim.lsp.config.luals  = {
     filetypes = { "lua" },
 }
 
-vim.lsp.config.gopls  = {
+vim.lsp.config.gopls    = {
     capabilities = require("cmp_nvim_lsp").default_capabilities(),
     cmd = { "gopls" },
     filetypes = { "go", "gomod", "gowork", "gosum" },
 }
 
-vim.lsp.config.rustls = {
+vim.lsp.config.rustls   = {
     capabilities = require("cmp_nvim_lsp").default_capabilities(),
     cmd = { "rust-analyzer" },
     filetypes = { "rust" },

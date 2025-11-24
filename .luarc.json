@@ -4,5 +4,8 @@
         "unused-local",
         "duplicate-set-field",
         "redefined-local"
+    ],
+    "diagnostics.globals": [
+        "vim"
     ]
 }

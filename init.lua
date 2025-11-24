@@ -1,6 +1,6 @@
 --NOTE: Requires v0.11.0
 
--- The `require('lspconfig')` "framework" is deprecated, use vim.lsp.config (see :h elp lspconfig-nvim-0.11) instead.
+-- The `require("lspconfig")` "framework" is deprecated, use vim.lsp.config (see :h elp lspconfig-nvim-0.11) instead.
 vim.deprecate = function() end -- TODO: fix this deprecation
 
 vim.g.mapleader = ","
@@ -71,70 +71,23 @@ local lazyPackages = {
     { "nvim-lua/plenary.nvim" },
     { "nvim-telescope/telescope.nvim",   tag = "0.1.8" },
     { "nvim-treesitter/nvim-treesitter", build = ":TSUpdate" },
-    { "hrsh7th/nvim-cmp" },                                                   -- TODO: Blink??
-    { "hrsh7th/cmp-nvim-lsp" },                                               -- TODO: Blink??
-    { "hrsh7th/cmp-buffer" },                                                 -- TODO: Blink??
-    { "hrsh7th/cmp-path" },                                                   -- TODO: Blink??
-    { "L3MON4D3/LuaSnip", run = "make install_jsregexp" },
+    { "hrsh7th/nvim-cmp" },     -- TODO: Blink??
+    { "hrsh7th/cmp-nvim-lsp" }, -- TODO: Blink??
+    { "hrsh7th/cmp-buffer" },   -- TODO: Blink??
+    { "hrsh7th/cmp-path" },     -- TODO: Blink??
+    { "L3MON4D3/LuaSnip",                run = "make install_jsregexp" },
     { "saadparwaiz1/cmp_luasnip" },
-    { "numToStr/Comment.nvim" },                                              -- TOOD: Find a way to get rid of this
-    { "RRethy/nvim-align" },                                                  -- TOOD: Find a way to get rid of this
+    { "numToStr/Comment.nvim" },                                                        -- TOOD: Find a way to get rid of this
+    { "RRethy/nvim-align" },                                                            -- TOOD: Find a way to get rid of this
     { "lewis6991/gitsigns.nvim" },
-    { "akinsho/git-conflict.nvim",       version = "2.1.0",  config = true }, -- TOOD: Find a way to get rid of this
-    -- {
-    --     -- "lukasjoc/vibr.nvim",
-    --     lazy = false,
-    --     priority = 1000,
-    --     opts = {},
-    --     dir = "~/fun/vibr.nvim", -- Path to your local plugin
-    --     name = "vibr.nvim",      -- Optional: plugin name
-    --     dev = true,              -- Optional: Marks it as a dev plugin
-    -- },
-    { "Mofiqul/vscode.nvim" }
+    { "akinsho/git-conflict.nvim",       version = "2.1.0",            config = true }, -- TOOD: Find a way to get rid of this
 }
 
 require("lazy").setup(lazyPackages, {})
 
--- TODO: In very bright environments the selection background in the dark theme, is barely readable -> Maybe the background should be a slightly warmer one instead.
--- TODO: Im using a blue for search that is also used in other highlights -> It will overlap.
--- TODO: Diagnostic error should be more visible.
--- require("vibr").load()
--- vim.opt.background = "light"
--- vim.cmd("colo gruvbox")
 
-local c = require('vscode.colors').get_colors()
-require('vscode').setup({
-    -- Alternatively set style in setup
-    -- style = 'light',
-
-    -- Enable transparent background
-    transparent = true,
-
-    -- Enable italic comment
-    italic_comments = true,
-
-    -- Underline `@markup.link.*` variants
-    underline_links = true,
-
-    -- Disable nvim-tree background color
-    disable_nvimtree_bg = true,
-
-    -- Apply theme colors to terminal
-    terminal_colors = true,
-
-    -- Override colors (see ./lua/vscode/colors.lua)
-    color_overrides = {
-        vscLineNumber = '#FFFFFF',
-    },
-
-    -- Override highlight groups (see ./lua/vscode/theme.lua)
-    group_overrides = {
-        -- this supports the same val table as vim.api.nvim_set_hl
-        -- use colors from this colorscheme by requiring vscode.colors!
-        Cursor = { fg = c.vscDarkBlue, bg = c.vscLightGreen, bold = true },
-    }
-})
-vim.cmd.colorscheme("vscode")
+vim.cmd.colorscheme("default")
+vim.cmd.highlight("Comment guifg=orange")
 
 require("Comment").setup({
     toggler = { line = "<leader>c" },
@@ -207,7 +160,7 @@ cmp.setup({
     })
 })
 
-if vim.loop.fs_stat(vim.loop.cwd() .. '/' .. '.oxlintrc.json') then
+if vim.loop.fs_stat(vim.loop.cwd() .. "/" .. ".oxlintrc.json") then
     vim.lsp.enable("oxlint")
 else
     -- TODO: lspconfig sets up the client commands in a certain way that i dont get
@@ -219,33 +172,61 @@ else
     })
 end
 
-
--- TODO: Upgrade to latest language server: https://github.com/vuejs/language-tools/wiki/Neovim
-vim.lsp.config.vuels  = {
+vim.lsp.config("typescript", {
     capabilities = require("cmp_nvim_lsp").default_capabilities(),
-    cmd = { "vue-language-server", "--stdio" },
-    init_options = {
-        typescript = {
-            tsdk = require("os").getenv("NVM_BIN"):match("(.*)/") .. "/lib/node_modules/typescript/lib",
-        },
-    },
-    filetypes = { "vue" },
-}
-
-vim.lsp.config.tsls   = {
-    capabilities = require("cmp_nvim_lsp").default_capabilities(),
-    filetypes = { "javascript", "typescript", "vue", "typescriptreact" },
     cmd = { "typescript-language-server", "--stdio" },
     init_options = {
         plugins = {
             {
                 name = "@vue/typescript-plugin",
-                location = require("os").getenv("NVM_BIN"):match("(.*)/") .. "/lib/node_modules/@vue/typescript-plugin",
-                languages = { "javascript", "typescript", "vue" },
+                location = require("os").getenv("NVM_BIN"):match("(.*)/") .. "/lib/node_modules/@vue/language-server",
+                languages = { "vue" },
+                configNamespace = "typescript",
             },
         },
-    }
-}
+    },
+    filetypes = { "typescript", "javascript", "vue" },
+})
+
+vim.lsp.config("vue", {
+    capabilities = require("cmp_nvim_lsp").default_capabilities(),
+    cmd = { "vue-language-server", "--stdio" },
+    filetypes = { "vue" },
+    on_init = function(client)
+        client.handlers["tsserver/request"] = function(_, result, context)
+            local ts_clients = vim.lsp.get_clients({ bufnr = context.bufnr, name = "typescript" })
+            local clients = {}
+
+            vim.list_extend(clients, ts_clients)
+
+            if #clients == 0 then
+                vim.notify("Could not find `vtsls` or `typescript` lsp client, `vue` would not work without it.",
+                    vim.log.levels.ERROR)
+                return
+            end
+            local ts_client = clients[1]
+
+            local param = unpack(result)
+            local id, command, payload = unpack(param)
+            ts_client:exec_cmd({
+                title = "vue_request_forward", -- You can give title anything as it"s used to represent a command in the UI, `:h Client:exec_cmd`
+                command = "typescript.tsserverRequest",
+                arguments = {
+                    command,
+                    payload,
+                },
+            }, { bufnr = context.bufnr }, function(_, r)
+                local response = r and r.body
+                -- TODO: handle error or response nil here, e.g. logging
+                -- NOTE: Do NOT return if there"s an error or no response, just return nil back to the vue to prevent memory leak
+                local response_data = { { id, response } }
+
+                ---@diagnostic disable-next-line: param-type-mismatch
+                client:notify("tsserver/response", response_data)
+            end)
+        end
+    end,
+})
 
 vim.lsp.config.luals  = {
     capabilities = require("cmp_nvim_lsp").default_capabilities(),
@@ -273,13 +254,19 @@ vim.lsp.config.rustls = {
     filetypes = { "rust" },
 }
 
--- FIXME: I suppose for most of these i dont really need to configure anything
+vim.lsp.config.json   = {
+    capabilities = require("cmp_nvim_lsp").default_capabilities(),
+    cmd = { "vscode-json-language-server", "--stdio" },
+    filetypes = { "json" },
+}
+
 vim.lsp.enable({
     "luals",
     "gopls",
-    "tsls",
-    "vuels",
     "rustls",
+    "json",
+    "typescript",
+    "vue",
 })
 
 require("gitsigns").setup();

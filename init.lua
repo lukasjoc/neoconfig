@@ -35,7 +35,17 @@ vim.api.nvim_create_autocmd("BufEnter", {
     end,
 })
 
-vim.cmd([[ colo desert ]])
+vim.cmd.colorscheme("default");
+local hi = vim.api.nvim_set_hl
+hi(0, "Normal", { bg = "#111111" })
+hi(0, "ColorColumn", { bg = "#222222" })
+hi(0, "SignColumn", { bg = "#222222" })
+hi(0, "Comment", { fg = "orange", italic = true })
+hi(0, "@comment", { fg = "orange", bg = "NONE", italic = true })
+hi(0, "@comment.note", { fg = "cyan", bg = "NONE", bold = true })
+hi(0, "@comment.warning", { fg = "yellow", bg = "NONE", bold = true })
+hi(0, "@comment.error", { fg = "red", bg = "NONE", bold = true })
+
 vim.keymap.set("n", '<leader>w', '<C-^>', { noremap = true, silent = true })
 vim.keymap.set("n", "<leader>e", "<CMD>:Explore<CR>", { noremap = true, silent = true })
 vim.keymap.set("n", "<leader>r", "<CMD>:nohl<CR>", { noremap = true, silent = true })

@@ -1,3 +1,3 @@
 # neoconfig
 
-> a minimal neovim config using lazy, mason, treesitter, cmp, telescope and others..
+> a minimal neovim config using lazy, treesitter, blink, telescope and others..

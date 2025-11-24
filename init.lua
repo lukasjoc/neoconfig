@@ -1,4 +1,4 @@
---NOTE: Requires v0.11.0
+-- NOTE: Requires v0.11.0
 
 -- The `require("lspconfig")` "framework" is deprecated, use vim.lsp.config (see :h elp lspconfig-nvim-0.11) instead.
 vim.deprecate = function() end -- TODO: fix this deprecation
@@ -57,7 +57,7 @@ vim.opt.rtp:prepend(lazypath)
 
 -- Lazy (TODO: Try to reduce dependencies)
 local lazyPackages = {
-    { "neovim/nvim-lspconfig", }, -- NOTE: Only still in here because of freaking eslint
+    { "neovim/nvim-lspconfig", }, -- @deprecated (eslint :eyes:)
     {
         "nvim-treesitter/nvim-treesitter",
         dependencies = { "nvim-treesitter/playground" },
@@ -71,23 +71,79 @@ local lazyPackages = {
     { "nvim-lua/plenary.nvim" },
     { "nvim-telescope/telescope.nvim",   tag = "0.1.8" },
     { "nvim-treesitter/nvim-treesitter", build = ":TSUpdate" },
-    { "hrsh7th/nvim-cmp" },     -- TODO: Blink??
-    { "hrsh7th/cmp-nvim-lsp" }, -- TODO: Blink??
-    { "hrsh7th/cmp-buffer" },   -- TODO: Blink??
-    { "hrsh7th/cmp-path" },     -- TODO: Blink??
-    { "L3MON4D3/LuaSnip",                run = "make install_jsregexp" },
-    { "saadparwaiz1/cmp_luasnip" },
-    { "numToStr/Comment.nvim" },                                                        -- TOOD: Find a way to get rid of this
-    { "RRethy/nvim-align" },                                                            -- TOOD: Find a way to get rid of this
+    { "numToStr/Comment.nvim" },                                              -- TOOD: Find a way to get rid of this
+    { "RRethy/nvim-align" },                                                  -- TOOD: Find a way to get rid of this
     { "lewis6991/gitsigns.nvim" },
-    { "akinsho/git-conflict.nvim",       version = "2.1.0",            config = true }, -- TOOD: Find a way to get rid of this
+    { "akinsho/git-conflict.nvim",       version = "2.1.0",  config = true }, -- TOOD: Find a way to get rid of this
+    {
+        "saghen/blink.cmp",
+        -- dependencies = { "rafamadriz/friendly-snippets" },
+
+        -- use a release tag to download pre-built binaries
+        version = "1.*",
+
+        ---@module "blink.cmp"
+        ---@type blink.cmp.Config
+        opts = {
+            -- "default" (recommended) for mappings similar to built-in completions (C-y to accept)
+            -- "super-tab" for mappings similar to vscode (tab to accept)
+            -- "enter" for enter to accept
+            -- "none" for no mappings
+            --
+            -- All presets have the following mappings:
+            -- C-space: Open menu or open docs if already open
+            -- C-n/C-p or Up/Down: Select next/previous item
+            -- C-e: Hide menu
+            -- C-k: Toggle signature help (if signature.enabled = true)
+            --
+            -- See :h blink-cmp-config-keymap for defining your own keymap
+            keymap = {
+                preset = "default",
+                ["<C-w>"] = { "select_and_accept", "fallback" },
+            },
+
+            appearance = {
+                -- "mono" (default) for "Nerd Font Mono" or "normal" for "Nerd Font"
+                -- Adjusts spacing to ensure icons are aligned
+                nerd_font_variant = "mono"
+            },
+
+            -- (Default) Only show the documentation popup when manually triggered
+            completion = {
+                documentation = { auto_show = false },
+                accept = { auto_brackets = { enabled = false }, },
+                ghost_text = { enabled = true },
+            },
+
+            -- Default list of enabled providers defined so that you can extend it
+            -- elsewhere in your config, without redefining it, due to `opts_extend`
+            sources = {
+                default = { "lsp", "path", "snippets", "buffer" },
+            },
+
+            -- (Default) Rust fuzzy matcher for typo resistance and significantly better performance
+            -- You may use a lua implementation instead by using `implementation = "lua"` or fallback to the lua implementation,
+            -- when the Rust fuzzy matcher is not available, by using `implementation = "prefer_rust"`
+            --
+            -- See the fuzzy documentation for more information
+            fuzzy = { implementation = "prefer_rust_with_warning" },
+        },
+        opts_extend = { "sources.default" }
+    }
 }
 
 require("lazy").setup(lazyPackages, {})
 
-
-vim.cmd.colorscheme("default")
-vim.cmd.highlight("Comment guifg=orange")
+vim.cmd.colorscheme("default");
+local hi = vim.api.nvim_set_hl
+hi(0, "Normal", { bg = "#111111" })
+hi(0, "ColorColumn", { bg = "#222222" })
+hi(0, "SignColumn", { bg = "#222222" })
+hi(0, "Comment", { fg = "orange", italic = true })
+hi(0, "@comment", { fg = "orange", bg = "NONE", italic = true })
+hi(0, "@comment.note", { fg = "cyan", bg = "NONE", bold = true })
+hi(0, "@comment.warning", { fg = "yellow", bg = "NONE", bold = true })
+hi(0, "@comment.error", { fg = "red", bg = "NONE", bold = true })
 
 require("Comment").setup({
     toggler = { line = "<leader>c" },
@@ -141,39 +197,18 @@ vim.keymap.set("n", "<leader><leader>s", make_picker_for_cmd(require("telescope.
 vim.keymap.set("n", "<leader><leader>r", make_picker_for_cmd(require("telescope.builtin").resume), {})
 vim.keymap.set("n", "<leader><leader>b", make_picker_for_cmd(require("telescope.builtin").buffers), {})
 
-local cmp = require("cmp")
-local luasnip = require("luasnip")
-cmp.setup({
-    snippet = {
-        expand = function(args) luasnip.lsp_expand(args.body) end,
-    },
-    mapping = cmp.mapping.preset.insert({
-        ["<C-Space>"] = cmp.mapping.complete(),
-        ["<C-e>"] = cmp.mapping.abort(),
-        ["<C-w>"] = cmp.mapping.confirm({ select = false }),
-    }),
-    sources = cmp.config.sources({
-        { name = "nvim_lsp" },
-        { name = "luasnip" },
-        { name = "buffer" },
-        { name = "path" },
-    })
-})
-
 if vim.loop.fs_stat(vim.loop.cwd() .. "/" .. ".oxlintrc.json") then
     vim.lsp.enable("oxlint")
 else
     -- TODO: lspconfig sets up the client commands in a certain way that i dont get
     -- out of the box with `vim.lsp.` so i have to find a way to achive that as well.
     require("lspconfig").eslint.setup({
-        capabilities = require("cmp_nvim_lsp").default_capabilities(),
         cmd = { "vscode-eslint-language-server", "--stdio" },
         filetypes = { "vue", "typescript", "javascript" },
     })
 end
 
 vim.lsp.config("typescript", {
-    capabilities = require("cmp_nvim_lsp").default_capabilities(),
     cmd = { "typescript-language-server", "--stdio" },
     init_options = {
         plugins = {
@@ -189,7 +224,6 @@ vim.lsp.config("typescript", {
 })
 
 vim.lsp.config("vue", {
-    capabilities = require("cmp_nvim_lsp").default_capabilities(),
     cmd = { "vue-language-server", "--stdio" },
     filetypes = { "vue" },
     on_init = function(client)
@@ -228,8 +262,7 @@ vim.lsp.config("vue", {
     end,
 })
 
-vim.lsp.config.luals  = {
-    capabilities = require("cmp_nvim_lsp").default_capabilities(),
+vim.lsp.config.lua  = {
     cmd = { "lua-language-server" },
     root_markers = { ".luarc.json" },
     setttings = {
@@ -242,28 +275,25 @@ vim.lsp.config.luals  = {
     filetypes = { "lua" },
 }
 
-vim.lsp.config.gopls  = {
-    capabilities = require("cmp_nvim_lsp").default_capabilities(),
+vim.lsp.config.go  = {
     cmd = { "gopls" },
     filetypes = { "go", "gomod", "gowork", "gosum" },
 }
 
-vim.lsp.config.rustls = {
-    capabilities = require("cmp_nvim_lsp").default_capabilities(),
+vim.lsp.config.rust = {
     cmd = { "rust-analyzer" },
     filetypes = { "rust" },
 }
 
 vim.lsp.config.json   = {
-    capabilities = require("cmp_nvim_lsp").default_capabilities(),
     cmd = { "vscode-json-language-server", "--stdio" },
     filetypes = { "json" },
 }
 
 vim.lsp.enable({
-    "luals",
-    "gopls",
-    "rustls",
+    "lua",
+    "go",
+    "rust",
     "json",
     "typescript",
     "vue",
@@ -308,6 +338,7 @@ end
 vim.keymap.set("n", "<leader>w", "<C-^>", { noremap = true, silent = true })
 vim.keymap.set("n", "<leader>e", "<CMD>:Explore<CR>", { noremap = true, silent = true })
 vim.keymap.set("n", "<leader>r", vim.cmd.nohl, { noremap = true, silent = true })
+
 vim.api.nvim_create_autocmd("LspAttach", {
     group = vim.api.nvim_create_augroup("UserLspConfig", {}),
     callback = function(event)
@@ -335,8 +366,9 @@ vim.api.nvim_create_autocmd("LspAttach", {
 })
 
 -- Setup for custom text formats and languages..
-vim.filetype.add({ extension = { tsm = "tsm" } }) -- tiny IR format
-vim.filetype.add({ extension = { tm = "tm" } })   -- tiny source format
+vim.filetype.add({ extension = { tsm = "tsm" } })   -- tiny IR format
+vim.filetype.add({ extension = { tm = "tm" } })     -- tiny source format
 vim.filetype.add({ extension = { act = "act" } })
+vim.filetype.add({ extension = { aocl = "aocl" } }) -- AOC Language Challenge
 
 print("Were vimming.. Have a nice day hacking! (@<@)")

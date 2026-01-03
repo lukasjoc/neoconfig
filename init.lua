@@ -134,13 +134,17 @@ local lazyPackages = {
 
 require("lazy").setup(lazyPackages, {})
 
-vim.cmd.colorscheme("default");
+vim.cmd.colorscheme(
+-- "default",
+    "zenburn"
+)
+
 local hi = vim.api.nvim_set_hl
-hi(0, "Normal", { bg = "#111111" })
-hi(0, "ColorColumn", { bg = "#222222" })
-hi(0, "SignColumn", { bg = "#222222" })
-hi(0, "Comment", { fg = "orange", italic = true })
-hi(0, "@comment", { fg = "orange", bg = "NONE", italic = true })
+hi(0, "ColorColumn", { bg = "#333333" })
+hi(0, "SignColumn", { bg = "#333333" })
+hi(0, "NormalFloat", { link = "Float" })
+hi(0, "Comment", { fg = "#82a282", italic = true })
+hi(0, "@comment", { fg = "#82a282", bg = "NONE", italic = true })
 hi(0, "@comment.note", { fg = "cyan", bg = "NONE", bold = true })
 hi(0, "@comment.warning", { fg = "yellow", bg = "NONE", bold = true })
 hi(0, "@comment.error", { fg = "red", bg = "NONE", bold = true })
@@ -208,13 +212,19 @@ else
     })
 end
 
+--- @return string
+local nvm_bin = function()
+    local nvm_bin = require("os").getenv("NVM_BIN") or ""
+    return string.match(nvm_bin, "(.*)/", nil) or ""
+end
+
 vim.lsp.config("typescript", {
     cmd = { "typescript-language-server", "--stdio" },
     init_options = {
         plugins = {
             {
                 name = "@vue/typescript-plugin",
-                location = require("os").getenv("NVM_BIN"):match("(.*)/") .. "/lib/node_modules/@vue/language-server",
+                location = nvm_bin() .. "/lib/node_modules/@vue/language-server",
                 languages = { "vue" },
                 configNamespace = "typescript",
             },
@@ -240,8 +250,8 @@ vim.lsp.config("vue", {
             end
             local ts_client = clients[1]
 
-            local param = unpack(result)
-            local id, command, payload = unpack(param)
+            ---@diagnostic disable-next-line: deprecated
+            local id, command, payload = unpack(unpack(result))
             ts_client:exec_cmd({
                 title = "vue_request_forward", -- You can give title anything as it"s used to represent a command in the UI, `:h Client:exec_cmd`
                 command = "typescript.tsserverRequest",
@@ -262,7 +272,7 @@ vim.lsp.config("vue", {
     end,
 })
 
-vim.lsp.config.lua  = {
+vim.lsp.config.lua    = {
     cmd = { "lua-language-server" },
     root_markers = { ".luarc.json" },
     setttings = {
@@ -275,12 +285,12 @@ vim.lsp.config.lua  = {
     filetypes = { "lua" },
 }
 
-vim.lsp.config.go  = {
+vim.lsp.config.go     = {
     cmd = { "gopls" },
     filetypes = { "go", "gomod", "gowork", "gosum" },
 }
 
-vim.lsp.config.rust = {
+vim.lsp.config.rust   = {
     cmd = { "rust-analyzer" },
     filetypes = { "rust" },
 }
@@ -290,13 +300,48 @@ vim.lsp.config.json   = {
     filetypes = { "json" },
 }
 
+vim.lsp.config.yaml   = {
+    cmd = { "yaml-language-server", "--stdio" },
+    filetypes = { "yaml" },
+}
+
+vim.lsp.config.python = {
+    cmd = { "pylsp" },
+    filetypes = { "python" },
+    plugins = {
+        ruff = {
+            enabled = true,       -- Enable the plugin
+            formatEnabled = true, -- Enable formatting using ruffs formatter
+            -- executable = "<path-to-ruff-bin>", -- Custom path to ruff
+            -- config = "<path_to_custom_ruff_toml>", -- Custom config for ruff to use
+            extendSelect = { "I" },          -- Rules that are additionally used by ruff
+            extendIgnore = { "C90" },        -- Rules that are additionally ignored by ruff
+            format = { "I" },                -- Rules that are marked as fixable by ruff that should be fixed when running textDocument/formatting
+            severities = { ["D212"] = "I" }, -- Optional table of rules where a custom severity is desired
+            unsafeFixes = false,             -- Whether or not to offer unsafe fixes as code actions. Ignored with the "Fix All" action
+            unfixable = { "F401" },          -- Rules that are excluded when checking the code actions (including the "Fix All" action)
+
+            -- Rules that are ignored when a pyproject.toml or ruff.toml is present:
+            lineLength = 90,                                 -- Line length to pass to ruff checking and formatting
+            exclude = { "__about__.py" },                    -- Files to be excluded by ruff checking
+            select = { "F" },                                -- Rules to be enabled by ruff
+            ignore = { "D210" },                             -- Rules to be ignored by ruff
+            perFileIgnores = { ["__init__.py"] = "CPY001" }, -- Rules that should be ignored for specific files
+            preview = false,                                 -- Whether to enable the preview style linting and formatting.
+            targetVersion = "py310",                         -- The minimum python version to target (applies for both linting and formatting).
+        },
+    },
+}
+
 vim.lsp.enable({
     "lua",
     "go",
     "rust",
     "json",
+    "yaml",
     "typescript",
     "vue",
+    "python",
 })
 
 require("gitsigns").setup();

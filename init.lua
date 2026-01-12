@@ -136,7 +136,8 @@ require("lazy").setup(lazyPackages, {})
 
 vim.cmd.colorscheme(
 -- "default",
-    "zenburn"
+-- "zenburn"
+    "blue"
 )
 
 local hi = vim.api.nvim_set_hl
@@ -333,6 +334,11 @@ vim.lsp.config.python = {
     },
 }
 
+vim.lsp.config.bash   = {
+    cmd = { "bash-language-server", "start" },
+    filetypes = { "sh", "bash" },
+}
+
 vim.lsp.enable({
     "lua",
     "go",
@@ -342,6 +348,7 @@ vim.lsp.enable({
     "typescript",
     "vue",
     "python",
+    "bash",
 })
 
 require("gitsigns").setup();

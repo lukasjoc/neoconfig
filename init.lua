@@ -41,6 +41,14 @@ vim.api.nvim_create_autocmd("BufEnter", {
     end,
 })
 
+-- Claude code setup
+vim.o.autoread = true
+vim.api.nvim_create_autocmd({ "BufEnter", "CursorHold", "CursorHoldI", "FocusGained" }, {
+    command = "if mode() != 'c' | checktime | endif",
+    pattern = { "*" },
+})
+require("claude").setup()
+
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
     vim.fn.system({
@@ -134,11 +142,7 @@ local lazyPackages = {
 
 require("lazy").setup(lazyPackages, {})
 
-vim.cmd.colorscheme(
--- "default",
--- "zenburn"
-    "blue"
-)
+vim.cmd.colorscheme("habamax")
 
 local hi = vim.api.nvim_set_hl
 hi(0, "ColorColumn", { bg = "#333333" })

@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+for cmd in git tree-sitter; do
+  if ! command -v "$cmd" &>/dev/null; then
+    echo "error: $cmd is not installed" >&2
+    exit 1
+  fi
+done
+
+if [[ -z "${1:-}" ]]; then
+  echo "usage: $0 <parsers-file>" >&2
+  exit 1
+fi
+parsers_file="$1"
+parser_dir="${HOME}/.config/nvim/parser"
+tmpdir="$(mktemp -d)"
+echo ":: Temp dir: $tmpdir"
+
+mkdir -p "$parser_dir"
+for f in "$parser_dir"/*.so; do
+  [[ -f "$f" ]] && mv "$f" "$f.bak"
+done
+
+while read -r repo commit name location; do
+  [[ -z "$repo" || "$repo" == \#* ]] && continue
+
+  echo ":: Building $name ($commit)"
+
+  clone_dir="$tmpdir/$(basename "$repo")"
+  git clone --quiet "https://$repo" "$clone_dir"
+  git -C "$clone_dir" checkout --quiet "$commit"
+
+  build_dir="$clone_dir${location:+/$location}"
+  tree-sitter build -o "$parser_dir/$name.so" "$build_dir"
+done < "$parsers_file"
+
+rm -f "$parser_dir"/*.so.bak
+
+echo ":: Done. Parsers installed to $parser_dir"
+

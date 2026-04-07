@@ -1,4 +1,4 @@
--- NOTE: Requires v0.11.0
+-- NOTE: Requires v0.12
 
 -- The `require("lspconfig")` "framework" is deprecated, use vim.lsp.config (see :h elp lspconfig-nvim-0.11) instead.
 vim.deprecate = function() end -- TODO: fix this deprecation
@@ -33,6 +33,25 @@ vim.g.netrw_banner = 0
 vim.g.netrw_fastbrowse = 1
 vim.g.netrw_liststyle = 1
 
+vim.api.nvim_create_autocmd("FileType", {
+    pattern = {
+        "vue",
+        "javascript",
+        "typescript",
+        "html",
+        "css",
+        "comment",
+        "rust",
+        "go",
+        "json",
+        "yaml",
+        "diff",
+        "bash",
+    },
+    callback = function(args) vim.treesitter.start() end,
+})
+
+
 -- Prevent automatic comment insertion.
 vim.api.nvim_create_autocmd("BufEnter", {
     pattern = "*",
@@ -41,13 +60,11 @@ vim.api.nvim_create_autocmd("BufEnter", {
     end,
 })
 
--- Claude code setup
 vim.o.autoread = true
 vim.api.nvim_create_autocmd({ "BufEnter", "CursorHold", "CursorHoldI", "FocusGained" }, {
     command = "if mode() != 'c' | checktime | endif",
     pattern = { "*" },
 })
-require("claude").setup()
 
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
@@ -66,23 +83,12 @@ vim.opt.rtp:prepend(lazypath)
 -- Lazy (TODO: Try to reduce dependencies)
 local lazyPackages = {
     { "neovim/nvim-lspconfig", }, -- @deprecated (eslint :eyes:)
-    {
-        "nvim-treesitter/nvim-treesitter",
-        dependencies = { "nvim-treesitter/playground" },
-        config = function()
-            require("nvim-treesitter.configs").setup({
-                highlight = { enable = true },
-                playground = { enable = true },
-            })
-        end
-    },
     { "nvim-lua/plenary.nvim" },
-    { "nvim-telescope/telescope.nvim",   tag = "0.1.8" },
-    { "nvim-treesitter/nvim-treesitter", build = ":TSUpdate" },
-    { "numToStr/Comment.nvim" },                                              -- TOOD: Find a way to get rid of this
-    { "RRethy/nvim-align" },                                                  -- TOOD: Find a way to get rid of this
+    { "nvim-telescope/telescope.nvim", tag = "v0.2.1" },
+    { "numToStr/Comment.nvim" },                                           -- TODO: Find a way to get rid of this
+    { "RRethy/nvim-align" },                                               -- TODO: Find a way to get rid of this
     { "lewis6991/gitsigns.nvim" },
-    { "akinsho/git-conflict.nvim",       version = "2.1.0",  config = true }, -- TOOD: Find a way to get rid of this
+    { "akinsho/git-conflict.nvim",     version = "2.1.0", config = true }, -- TODO: Find a way to get rid of this
     {
         "saghen/blink.cmp",
         -- dependencies = { "rafamadriz/friendly-snippets" },
@@ -121,12 +127,39 @@ local lazyPackages = {
                 documentation = { auto_show = false },
                 accept = { auto_brackets = { enabled = false }, },
                 ghost_text = { enabled = true },
+                -- menu = {
+                --     draw = {
+                --         columns = {
+                --             { "label",     "label_description", gap = 1 },
+                --             { "kind_icon", "kind" },
+                --         }
+                --     }
+                -- }
             },
 
             -- Default list of enabled providers defined so that you can extend it
             -- elsewhere in your config, without redefining it, due to `opts_extend`
             sources = {
-                default = { "lsp", "path", "snippets", "buffer" },
+                default = {
+                    "path",
+                    "snippets",
+                    "buffer",
+                    "lsp",
+                    -- lsp = {
+                    --     transform_items = function(_, items)
+                    --         for i, item in ipairs(items) do
+                    --             if i <= 3 then
+                    --                 vim.print({
+                    --                     label = item.label,
+                    --                     labelDetails = item.labelDetails,
+                    --                     detail = item.detail,
+                    --                 })
+                    --             end
+                    --         end
+                    --         return items
+                    --     end,
+                    -- },
+                },
             },
 
             -- (Default) Rust fuzzy matcher for typo resistance and significantly better performance
@@ -137,12 +170,12 @@ local lazyPackages = {
             fuzzy = { implementation = "prefer_rust_with_warning" },
         },
         opts_extend = { "sources.default" }
-    }
+    },
 }
 
 require("lazy").setup(lazyPackages, {})
 
-vim.cmd.colorscheme("habamax")
+vim.cmd.colorscheme("catppuccin")
 
 local hi = vim.api.nvim_set_hl
 hi(0, "ColorColumn", { bg = "#333333" })
@@ -153,6 +186,7 @@ hi(0, "@comment", { fg = "#82a282", bg = "NONE", italic = true })
 hi(0, "@comment.note", { fg = "cyan", bg = "NONE", bold = true })
 hi(0, "@comment.warning", { fg = "yellow", bg = "NONE", bold = true })
 hi(0, "@comment.error", { fg = "red", bg = "NONE", bold = true })
+
 
 require("Comment").setup({
     toggler = { line = "<leader>c" },
@@ -177,17 +211,6 @@ require("telescope").setup({
     },
 })
 
-require("nvim-treesitter.configs").setup({
-    ensure_installed = { "lua", "comment" },
-    sync_install = true,
-    auto_install = false,
-    highlight = {
-        enable = true,
-        additional_vim_regex_highlighting = false,
-    },
-    indent = { enable = true },
-})
-
 local make_picker_for_cmd = function(cmd)
     return function()
         cmd(require("telescope.themes").get_ivy({
@@ -206,16 +229,16 @@ vim.keymap.set("n", "<leader><leader>s", make_picker_for_cmd(require("telescope.
 vim.keymap.set("n", "<leader><leader>r", make_picker_for_cmd(require("telescope.builtin").resume), {})
 vim.keymap.set("n", "<leader><leader>b", make_picker_for_cmd(require("telescope.builtin").buffers), {})
 
-if vim.loop.fs_stat(vim.loop.cwd() .. "/" .. ".oxlintrc.json") then
-    vim.lsp.enable("oxlint")
-else
-    -- TODO: lspconfig sets up the client commands in a certain way that i dont get
-    -- out of the box with `vim.lsp.` so i have to find a way to achive that as well.
-    require("lspconfig").eslint.setup({
-        cmd = { "vscode-eslint-language-server", "--stdio" },
-        filetypes = { "vue", "typescript", "javascript" },
-    })
-end
+-- if vim.loop.fs_stat(vim.loop.cwd() .. "/" .. ".oxlintrc.json") then
+--     vim.lsp.enable("oxlint")
+-- else
+--     -- TODO: lspconfig sets up the client commands in a certain way that i dont get
+--     -- out of the box with `vim.lsp.` so i have to find a way to achive that as well.
+require("lspconfig").eslint.setup({
+    cmd = { "vscode-eslint-language-server", "--stdio" },
+    filetypes = { "vue", "typescript", "javascript" },
+})
+-- end
 
 --- @return string
 local nvm_bin = function()
@@ -343,6 +366,16 @@ vim.lsp.config.bash   = {
     filetypes = { "sh", "bash" },
 }
 
+-- vim.lsp.config.oxlint = {
+--     cmd = { "oxlint", "--lsp" },
+--     filetypes = { "typescript", "javascript", "vue" },
+-- }
+
+-- vim.lsp.config.oxfmt  = {
+--     cmd = { "oxfmt", "--lsp" },
+--     filetypes = { "typescript", "javascript", "vue" },
+-- }
+
 vim.lsp.enable({
     "lua",
     "go",
@@ -353,6 +386,8 @@ vim.lsp.enable({
     "vue",
     "python",
     "bash",
+    -- "oxlint",
+    -- "oxfmt",
 })
 
 require("gitsigns").setup();
@@ -426,5 +461,6 @@ vim.filetype.add({ extension = { tsm = "tsm" } })   -- tiny IR format
 vim.filetype.add({ extension = { tm = "tm" } })     -- tiny source format
 vim.filetype.add({ extension = { act = "act" } })
 vim.filetype.add({ extension = { aocl = "aocl" } }) -- AOC Language Challenge
+-- vim.filetype.add({ extension = { stacks = "stacks" } }) -- AOC Language Challenge
 
 print("Were vimming.. Have a nice day hacking! (@<@)")

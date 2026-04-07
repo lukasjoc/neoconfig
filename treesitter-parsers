@@ -1,0 +1,13 @@
+# Help: <url> <sha> [location] <name>
+github.com/tree-sitter-grammars/tree-sitter-vue ce8011a414fdf8091f4e4071752efc376f4afb08 vue
+github.com/tree-sitter/tree-sitter-javascript 58404d8cf191d69f2674a8fd507bd5776f46cb11 javascript
+github.com/tree-sitter/tree-sitter-typescript 75b3874edb2dc714fb1fd77a32013d0f8699989f typescript typescript
+github.com/tree-sitter/tree-sitter-html 73a3947324f6efddf9e17c0ea58d454843590cc0 html
+github.com/tree-sitter/tree-sitter-css dda5cfc5722c429eaba1c910ca32c2c0c5bb1a3f css
+github.com/stsewd/tree-sitter-comment 66272d2b6c73fb61157541b69dd0a7ce7b42a5ad comment
+github.com/tree-sitter/tree-sitter-rust 77a3747266f4d621d0757825e6b11edcbf991ca5 rust
+github.com/tree-sitter/tree-sitter-go 2346a3ab1bb3857b48b29d779a1ef9799a248cd7 go
+github.com/tree-sitter/tree-sitter-json 001c28d7a29832b06b0e831ec77845553c89b56d json
+github.com/tree-sitter-grammars/tree-sitter-yaml 4463985dfccc640f3d6991e3396a2047610cf5f8 yaml
+github.com/tree-sitter-grammars/tree-sitter-diff 2520c3f934b3179bb540d23e0ef45f75304b5fed diff
+github.com/tree-sitter/tree-sitter-bash a06c2e4415e9bc0346c6b86d401879ffb44058f7 bash

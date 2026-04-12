@@ -3,6 +3,15 @@
 -- The `require("lspconfig")` "framework" is deprecated, use vim.lsp.config (see :h elp lspconfig-nvim-0.11) instead.
 vim.deprecate = function() end -- TODO: fix this deprecation
 
+local notify = vim.notify;
+vim.notify = function(msg, level, opts)
+    -- hide: "rust request handler panicked &'{region error} must #0 has parameters, but no args where provided in instantiate"
+    -- this happens in some situations on unclosed delims. idk.
+    if type(msg) == "string" and msg:match("rust") then return end
+    return notify(msg, level, opts)
+end
+
+
 vim.g.mapleader = ","
 vim.g.maplocalleader = ","
 vim.opt.title = true

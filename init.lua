@@ -215,6 +215,7 @@ require("telescope").setup({
                 "--glob=!**/dist/*",
                 "--glob=!**/target/*",
                 "--glob=!**/node_modules/*",
+                "--glob=!**/vendor/*",
             },
         }
     },

@@ -430,6 +430,7 @@ local toggle_virtual_lines = function()
 end
 
 vim.keymap.set("n", "<leader>c", "gcc", { remap = true })
+vim.keymap.set("v", "<leader>c", "gcc", { remap = true })
 vim.keymap.set("n", "<leader>w", "<C-^>", { noremap = true, silent = true })
 vim.keymap.set("n", "<leader>e", "<CMD>:Explore<CR>", { noremap = true, silent = true })
 vim.keymap.set("n", "<leader>r", vim.cmd.nohl, { noremap = true, silent = true })

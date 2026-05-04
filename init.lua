@@ -94,8 +94,7 @@ local lazyPackages = {
     { "neovim/nvim-lspconfig", }, -- @deprecated (eslint :eyes:)
     { "nvim-lua/plenary.nvim" },
     { "nvim-telescope/telescope.nvim", tag = "v0.2.1" },
-    { "numToStr/Comment.nvim" },                                           -- TODO: Find a way to get rid of this
-    { "RRethy/nvim-align" },                                               -- TODO: Find a way to get rid of this
+    { "lukasjoc/nvim-align" },
     { "lewis6991/gitsigns.nvim" },
     { "akinsho/git-conflict.nvim",     version = "2.1.0", config = true }, -- TODO: Find a way to get rid of this
     {
@@ -196,12 +195,6 @@ hi(0, "@comment.note", { fg = "cyan", bg = "NONE", bold = true })
 hi(0, "@comment.warning", { fg = "yellow", bg = "NONE", bold = true })
 hi(0, "@comment.error", { fg = "red", bg = "NONE", bold = true })
 
-
-require("Comment").setup({
-    toggler = { line = "<leader>c" },
-    opleader = { line = "<leader>c" },
-})
-
 require("telescope").setup({
     pickers = {
         find_files = {
@@ -213,8 +206,9 @@ require("telescope").setup({
                 "--hidden",
                 "--glob=!**/.git/*",
                 "--glob=!**/dist/*",
-                "--glob=!**/target/*",
                 "--glob=!**/node_modules/*",
+                "--glob=!**/target/*",
+                "--glob=!**/vendor/*",
                 "--glob=!*.heapsnapshot",
                 "--glob=!*.log",
             },
@@ -437,6 +431,8 @@ local toggle_virtual_lines = function()
     vim.diagnostic.config(opts);
 end
 
+vim.keymap.set("n", "<leader>c", "gcc", { remap = true })
+vim.keymap.set("v", "<leader>c", "gcc", { remap = true })
 vim.keymap.set("n", "<leader>w", "<C-^>", { noremap = true, silent = true })
 vim.keymap.set("n", "<leader>e", "<CMD>:Explore<CR>", { noremap = true, silent = true })
 vim.keymap.set("n", "<leader>r", vim.cmd.nohl, { noremap = true, silent = true })

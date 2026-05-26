@@ -371,15 +371,15 @@ vim.lsp.config.bash   = {
     filetypes = { "sh", "bash" },
 }
 
--- vim.lsp.config.oxlint = {
---     cmd = { "oxlint", "--lsp" },
---     filetypes = { "typescript", "javascript", "vue" },
--- }
+vim.lsp.config.oxlint = {
+    cmd = { "oxlint", "--lsp" },
+    filetypes = { "typescript", "javascript", "vue" },
+}
 
--- vim.lsp.config.oxfmt  = {
---     cmd = { "oxfmt", "--lsp" },
---     filetypes = { "typescript", "javascript", "vue" },
--- }
+vim.lsp.config.oxfmt  = {
+    cmd = { "oxfmt", "--lsp" },
+    filetypes = { "yaml", "toml", "json", "typescript", "javascript", "vue" },
+}
 
 vim.lsp.enable({
     "lua",
@@ -391,8 +391,8 @@ vim.lsp.enable({
     "vue",
     "python",
     "bash",
-    -- "oxlint",
-    -- "oxfmt",
+    "oxlint",
+    "oxfmt",
 })
 
 require("gitsigns").setup();

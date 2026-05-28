@@ -56,6 +56,7 @@ vim.api.nvim_create_autocmd("FileType", {
         "yaml",
         "diff",
         "bash",
+        -- "odin", -- FIXME: doesnt work probably outdated.
     },
     callback = function(args) vim.treesitter.start() end,
 })
@@ -381,6 +382,11 @@ vim.lsp.config.oxfmt  = {
     filetypes = { "yaml", "toml", "json", "typescript", "javascript", "vue" },
 }
 
+vim.lsp.config.odin   = {
+    cmd = { "ols" },
+    filetypes = { "odin" },
+}
+
 vim.lsp.enable({
     "lua",
     "go",
@@ -393,6 +399,7 @@ vim.lsp.enable({
     "bash",
     "oxlint",
     "oxfmt",
+    "odin",
 })
 
 require("gitsigns").setup();

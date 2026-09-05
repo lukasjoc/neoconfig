@@ -471,10 +471,10 @@ vim.api.nvim_create_autocmd("LspAttach", {
 })
 
 -- Setup for custom text formats and languages..
-vim.filetype.add({ extension = { tsm = "tsm" } })   -- tiny IR format
-vim.filetype.add({ extension = { tm = "tm" } })     -- tiny source format
-vim.filetype.add({ extension = { act = "act" } })
-vim.filetype.add({ extension = { aocl = "aocl" } }) -- AOC Language Challenge
+-- vim.filetype.add({ extension = { tsm = "tsm" } })   -- tiny IR format
+-- vim.filetype.add({ extension = { tm = "tm" } })     -- tiny source format
+-- vim.filetype.add({ extension = { act = "act" } })
+-- vim.filetype.add({ extension = { aocl = "aocl" } }) -- AOC Language Challenge
 -- vim.filetype.add({ extension = { stacks = "stacks" } }) -- AOC Language Challenge
 
 print("Were vimming.. Have a nice day hacking! (@<@)")

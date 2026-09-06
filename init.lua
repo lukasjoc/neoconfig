@@ -187,14 +187,16 @@ require("lazy").setup(lazyPackages, {})
 vim.cmd.colorscheme("catppuccin")
 
 local hi = vim.api.nvim_set_hl
-hi(0, "ColorColumn", { bg = "#333333" })
-hi(0, "SignColumn", { bg = "#333333" })
+hi(0, "Normal", { bg = "#000000" })
 hi(0, "NormalFloat", { link = "Float" })
+hi(0, "ColorColumn", { bg = "#11111b" })
+hi(0, "SignColumn", { bg = "#1d1a22" })
 hi(0, "Comment", { fg = "#82a282", italic = true })
-hi(0, "@comment", { fg = "#82a282", bg = "NONE", italic = true })
-hi(0, "@comment.note", { fg = "cyan", bg = "NONE", bold = true })
-hi(0, "@comment.warning", { fg = "yellow", bg = "NONE", bold = true })
-hi(0, "@comment.error", { fg = "red", bg = "NONE", bold = true })
+hi(0, "@comment", { link = "Comment" })
+hi(0, "@comment.note", { fg = "LightBlue", bg = "NONE", bold = true })
+hi(0, "@comment.warning", { fg = "Orange", bg = "NONE", bold = true })
+hi(0, "@comment.todo", { fg = "LightBlue", bg = "NONE", bold = true })
+hi(0, "@comment.error", { fg = "Red", bg = "NONE", bold = true })
 
 require("telescope").setup({
     pickers = {

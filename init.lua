@@ -381,7 +381,9 @@ vim.lsp.config.oxlint = {
 
 vim.lsp.config.oxfmt  = {
     cmd = { "oxfmt", "--lsp" },
-    filetypes = { "yaml", "toml", "json", "typescript", "javascript", "vue" },
+    filetypes = {
+        "yaml", "toml", "json", "typescript", "javascript", "vue",
+        "html", "css", "scss", "sass", "markdown" },
 }
 
 vim.lsp.config.odin   = {
